@@ -1,0 +1,2844 @@
+diff --git a/AGENTS.md b/AGENTS.md
+index e4b5b51..93e00ad 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -4,7 +4,7 @@ Guidance for human and AI contributors working in this repository.
+ 
+ ## 1. Purpose
+ 
+-Paperclip is a control plane for AI-agent companies.
++Paperclip is a control plane for AI writers rooms.
+ The current implementation target is V1 and is defined in `doc/SPEC-implementation.md`.
+ 
+ ## 2. Read This First
+@@ -23,7 +23,7 @@ Before making changes, read in this order:
+ ## 3. Repo Map
+ 
+ - `server/`: Express REST API and orchestration services
+-- `ui/`: React + Vite board UI
++- `ui/`: React + Vite executive producer UI
+ - `packages/db/`: Drizzle schema, migrations, DB clients
+ - `packages/shared/`: shared types, constants, validators, API path constants
+ - `doc/`: operational and product docs
+@@ -58,8 +58,8 @@ pnpm dev
+ 
+ ## 5. Core Engineering Rules
+ 
+-1. Keep changes company-scoped.
+-Every domain entity should be scoped to a company and company boundaries must be enforced in routes/services.
++1. Keep changes production-scoped.
++Every domain entity should be scoped to a production and production boundaries must be enforced in routes/services.
+ 
+ 2. Keep contracts synchronized.
+ If you change schema/API behavior, update all impacted layers:
+@@ -69,9 +69,9 @@ If you change schema/API behavior, update all impacted layers:
+ - `ui` API clients and pages
+ 
+ 3. Preserve control-plane invariants.
+-- Single-assignee task model
+-- Atomic issue checkout semantics
+-- Approval gates for governed actions
++- Single-assignee assignment model
++- Atomic assignment checkout semantics
++- Greenlight gates for governed actions
+ - Budget hard-stop auto-pause behavior
+ - Activity logging for mutating actions
+ 
+@@ -115,21 +115,21 @@ If anything cannot be run, explicitly report what was not run and why.
+ ## 8. API and Auth Expectations
+ 
+ - Base path: `/api`
+-- Board access is treated as full-control operator context
+-- Agent access uses bearer API keys (`agent_api_keys`), hashed at rest
+-- Agent keys must not access other companies
++- Executive producer access is treated as full-control operator context
++- Writer access uses bearer API keys (`agent_api_keys`), hashed at rest
++- Writer keys must not access other productions
+ 
+ When adding endpoints:
+ 
+-- apply company access checks
+-- enforce actor permissions (board vs agent)
++- apply production access checks
++- enforce actor permissions (executive producer vs writer)
+ - write activity log entries for mutations
+ - return consistent HTTP errors (`400/401/403/404/409/422/500`)
+ 
+ ## 9. UI Expectations
+ 
+ - Keep routes and nav aligned with available API surface
+-- Use company selection context for company-scoped pages
++- Use production selection context for production-scoped pages
+ - Surface failures clearly; do not silently ignore API errors
+ 
+ ## 10. Definition of Done
+diff --git a/README.md b/README.md
+index c3d9fc8..b64cbd9 100644
+--- a/README.md
++++ b/README.md
+@@ -25,25 +25,25 @@
+ 
+ ## What is Paperclip?
+ 
+-# Open-source orchestration for zero-human companies
++# Open-source orchestration for AI writers rooms
+ 
+-**If OpenClaw is an _employee_, Paperclip is the _company_**
++**If OpenClaw is a _writer_, Paperclip is the _production_**
+ 
+-Paperclip is a Node.js server and React UI that orchestrates a team of AI agents to run a business. Bring your own agents, assign goals, and track your agents' work and costs from one dashboard.
++Paperclip is a Node.js server and React UI that orchestrates a room of AI writers to run a production. Bring your own writers, assign story arcs, and track your writers' work and budget from one dashboard.
+ 
+-It looks like a task manager — but under the hood it has org charts, budgets, governance, goal alignment, and agent coordination.
++It looks like a task manager — but under the hood it has room hierarchies, budgets, governance, story arc alignment, and writer coordination.
+ 
+-**Manage business goals, not pull requests.**
++**Manage creative vision, not pull requests.**
+ 
+-|        | Step            | Example                                                            |
+-| ------ | --------------- | ------------------------------------------------------------------ |
+-| **01** | Define the goal | _"Build the #1 AI note-taking app to $1M MRR."_                    |
+-| **02** | Hire the team   | CEO, CTO, engineers, designers, marketers — any bot, any provider. |
+-| **03** | Approve and run | Review strategy. Set budgets. Hit go. Monitor from the dashboard.  |
++|        | Step                | Example                                                                             |
++| ------ | ------------------- | ----------------------------------------------------------------------------------- |
++| **01** | Define the story    | _"Create a groundbreaking drama series that redefines the genre."_                   |
++| **02** | Staff the room      | Showrunner, Head Writer, Staff Writers, Story Editors — any bot, any provider.       |
++| **03** | Greenlight and run  | Review the vision. Set budgets. Hit go. Monitor from the dashboard.                  |
+ 
+ <br/>
+ 
+-> **COMING SOON: Clipmart** — Download and run entire companies with one click. Browse pre-built company templates — full org structures, agent configs, and skills — and import them into your Paperclip instance in seconds.
++> **COMING SOON: Clipmart** — Download and run entire productions with one click. Browse pre-built production templates — full room structures, writer configs, and skills — and import them into your Paperclip instance in seconds.
+ 
+ <br/>
+ 
+@@ -60,7 +60,7 @@ It looks like a task manager — but under the hood it has org charts, budgets,
+   </tr>
+ </table>
+ 
+-<em>If it can receive a heartbeat, it's hired.</em>
++<em>If it can receive a heartbeat, it's in the room.</em>
+ 
+ </div>
+ 
+@@ -68,13 +68,13 @@ It looks like a task manager — but under the hood it has org charts, budgets,
+ 
+ ## Paperclip is right for you if
+ 
+-- ✅ You want to build **autonomous AI companies**
+-- ✅ You **coordinate many different agents** (OpenClaw, Codex, Claude, Cursor) toward a common goal
+-- ✅ You have **20 simultaneous Claude Code terminals** open and lose track of what everyone is doing
+-- ✅ You want agents running **autonomously 24/7**, but still want to audit work and chime in when needed
+-- ✅ You want to **monitor costs** and enforce budgets
+-- ✅ You want a process for managing agents that **feels like using a task manager**
+-- ✅ You want to manage your autonomous businesses **from your phone**
++- ✅ You want to build **autonomous AI writers rooms**
++- ✅ You **coordinate many different writers** (OpenClaw, Codex, Claude, Cursor) toward a common creative vision
++- ✅ You have **20 simultaneous Claude Code terminals** open and lose track of what everyone is writing
++- ✅ You want writers working **autonomously 24/7**, but still want to review work and give notes when needed
++- ✅ You want to **monitor budgets** and enforce spending limits
++- ✅ You want a process for managing writers that **feels like using a task manager**
++- ✅ You want to manage your productions **from your phone**
+ 
+ <br/>
+ 
+@@ -83,44 +83,44 @@ It looks like a task manager — but under the hood it has org charts, budgets,
+ <table>
+ <tr>
+ <td align="center" width="33%">
+-<h3>🔌 Bring Your Own Agent</h3>
+-Any agent, any runtime, one org chart. If it can receive a heartbeat, it's hired.
++<h3>🔌 Bring Your Own Writer</h3>
++Any writer, any runtime, one room hierarchy. If it can receive a heartbeat, it's in the room.
+ </td>
+ <td align="center" width="33%">
+-<h3>🎯 Goal Alignment</h3>
+-Every task traces back to the company mission. Agents know <em>what</em> to do and <em>why</em>.
++<h3>🎯 Story Arc Alignment</h3>
++Every assignment traces back to the creative vision. Writers know <em>what</em> to write and <em>why</em>.
+ </td>
+ <td align="center" width="33%">
+-<h3>💓 Heartbeats</h3>
+-Agents wake on a schedule, check work, and act. Delegation flows up and down the org chart.
++<h3>💓 Writing Sessions</h3>
++Writers wake on a schedule, check assignments, and write. Delegation flows up and down the room hierarchy.
+ </td>
+ </tr>
+ <tr>
+ <td align="center">
+-<h3>💰 Cost Control</h3>
+-Monthly budgets per agent. When they hit the limit, they stop. No runaway costs.
++<h3>💰 Budget Control</h3>
++Monthly budgets per writer. When they hit the limit, they stop. No runaway costs.
+ </td>
+ <td align="center">
+-<h3>🏢 Multi-Company</h3>
+-One deployment, many companies. Complete data isolation. One control plane for your portfolio.
++<h3>🏢 Multi-Production</h3>
++One deployment, many productions. Complete data isolation. One control plane for your slate.
+ </td>
+ <td align="center">
+-<h3>🎫 Ticket System</h3>
++<h3>🎫 Assignment System</h3>
+ Every conversation traced. Every decision explained. Full tool-call tracing and immutable audit log.
+ </td>
+ </tr>
+ <tr>
+ <td align="center">
+ <h3>🛡️ Governance</h3>
+-You're the board. Approve hires, override strategy, pause or terminate any agent — at any time.
++You're the executive producer. Greenlight new hires, override vision, pause or let go of any writer — at any time.
+ </td>
+ <td align="center">
+-<h3>📊 Org Chart</h3>
+-Hierarchies, roles, reporting lines. Your agents have a boss, a title, and a job description.
++<h3>📊 Room Hierarchy</h3>
++Hierarchies, roles, reporting lines. Your writers have a showrunner, a title, and a job description.
+ </td>
+ <td align="center">
+ <h3>📱 Mobile Ready</h3>
+-Monitor and manage your autonomous businesses from anywhere.
++Monitor and manage your productions from anywhere.
+ </td>
+ </tr>
+ </table>
+@@ -129,14 +129,14 @@ Monitor and manage your autonomous businesses from anywhere.
+ 
+ ## Problems Paperclip solves
+ 
+-| Without Paperclip                                                                                                                     | With Paperclip                                                                                                                         |
+-| ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+-| ❌ You have 20 Claude Code tabs open and can't track which one does what. On reboot you lose everything.                              | ✅ Tasks are ticket-based, conversations are threaded, sessions persist across reboots.                                                |
+-| ❌ You manually gather context from several places to remind your bot what you're actually doing.                                     | ✅ Context flows from the task up through the project and company goals — your agent always knows what to do and why.                  |
+-| ❌ Folders of agent configs are disorganized and you're re-inventing task management, communication, and coordination between agents. | ✅ Paperclip gives you org charts, ticketing, delegation, and governance out of the box — so you run a company, not a pile of scripts. |
+-| ❌ Runaway loops waste hundreds of dollars of tokens and max your quota before you even know what happened.                           | ✅ Cost tracking surfaces token budgets and throttles agents when they're out. Management prioritizes with budgets.                    |
+-| ❌ You have recurring jobs (customer support, social, reports) and have to remember to manually kick them off.                        | ✅ Heartbeats handle regular work on a schedule. Management supervises.                                                                |
+-| ❌ You have an idea, you have to find your repo, fire up Claude Code, keep a tab open, and babysit it.                                | ✅ Add a task in Paperclip. Your coding agent works on it until it's done. Management reviews their work.                              |
++| Without Paperclip                                                                                                                      | With Paperclip                                                                                                                             |
++| -------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
++| ❌ You have 20 Claude Code tabs open and can't track which one does what. On reboot you lose everything.                               | ✅ Assignments are ticket-based, conversations are threaded, sessions persist across reboots.                                              |
++| ❌ You manually gather context from several places to remind your bot what you're actually working on.                                 | ✅ Context flows from the assignment up through the episode and production story arcs — your writer always knows what to write and why.    |
++| ❌ Folders of writer configs are disorganized and you're re-inventing assignment management, communication, and coordination.           | ✅ Paperclip gives you room hierarchies, assignments, delegation, and governance out of the box — so you run a production, not a mess.     |
++| ❌ Runaway loops waste hundreds of dollars of tokens and max your quota before you even know what happened.                             | ✅ Budget tracking surfaces token budgets and throttles writers when they're over. The showrunner prioritizes with budgets.                 |
++| ❌ You have recurring work (rewrites, continuity checks, outlines) and have to remember to manually kick them off.                     | ✅ Writing sessions handle regular work on a schedule. The showrunner supervises.                                                          |
++| ❌ You have an idea, you have to find your repo, fire up Claude Code, keep a tab open, and babysit it.                                 | ✅ Add an assignment in Paperclip. Your writer works on it until it's done. The showrunner reviews their work.                             |
+ 
+ <br/>
+ 
+@@ -146,13 +146,13 @@ Paperclip handles the hard orchestration details correctly.
+ 
+ |                                   |                                                                                                               |
+ | --------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+-| **Atomic execution.**             | Task checkout and budget enforcement are atomic, so no double-work and no runaway spend.                      |
+-| **Persistent agent state.**       | Agents resume the same task context across heartbeats instead of restarting from scratch.                     |
+-| **Runtime skill injection.**      | Agents can learn Paperclip workflows and project context at runtime, without retraining.                      |
+-| **Governance with rollback.**     | Approval gates are enforced, config changes are revisioned, and bad changes can be rolled back safely.        |
+-| **Goal-aware execution.**         | Tasks carry full goal ancestry so agents consistently see the "why," not just a title.                        |
+-| **Portable company templates.**   | Export/import orgs, agents, and skills with secret scrubbing and collision handling.                          |
+-| **True multi-company isolation.** | Every entity is company-scoped, so one deployment can run many companies with separate data and audit trails. |
++| **Atomic execution.**                 | Assignment checkout and budget enforcement are atomic, so no double-work and no runaway spend.                        |
++| **Persistent writer state.**          | Writers resume the same assignment context across writing sessions instead of restarting from scratch.                |
++| **Runtime skill injection.**          | Writers can learn Paperclip workflows and episode context at runtime, without retraining.                             |
++| **Governance with rollback.**         | Greenlight gates are enforced, config changes are revisioned, and bad changes can be rolled back safely.              |
++| **Story-arc-aware execution.**        | Assignments carry full story arc ancestry so writers consistently see the "why," not just a title.                    |
++| **Portable production templates.**    | Export/import room structures, writers, and skills with secret scrubbing and collision handling.                      |
++| **True multi-production isolation.**  | Every entity is production-scoped, so one deployment can run many productions with separate data and audit trails.    |
+ 
+ <br/>
+ 
+@@ -160,12 +160,12 @@ Paperclip handles the hard orchestration details correctly.
+ 
+ |                              |                                                                                                                      |
+ | ---------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+-| **Not a chatbot.**           | Agents have jobs, not chat windows.                                                                                  |
+-| **Not an agent framework.**  | We don't tell you how to build agents. We tell you how to run a company made of them.                                |
+-| **Not a workflow builder.**  | No drag-and-drop pipelines. Paperclip models companies — with org charts, goals, budgets, and governance.            |
+-| **Not a prompt manager.**    | Agents bring their own prompts, models, and runtimes. Paperclip manages the organization they work in.               |
+-| **Not a single-agent tool.** | This is for teams. If you have one agent, you probably don't need Paperclip. If you have twenty — you definitely do. |
+-| **Not a code review tool.**  | Paperclip orchestrates work, not pull requests. Bring your own review process.                                       |
++| **Not a chatbot.**            | Writers have assignments, not chat windows.                                                                               |
++| **Not a writer framework.**   | We don't tell you how to build writers. We tell you how to run a production made of them.                                 |
++| **Not a workflow builder.**   | No drag-and-drop pipelines. Paperclip models productions — with room hierarchies, story arcs, budgets, and governance.   |
++| **Not a prompt manager.**     | Writers bring their own prompts, models, and runtimes. Paperclip manages the production they work in.                     |
++| **Not a single-writer tool.** | This is for rooms. If you have one writer, you probably don't need Paperclip. If you have twenty — you definitely do.     |
++| **Not a code review tool.**   | Paperclip orchestrates work, not pull requests. Bring your own review process.                                            |
+ 
+ <br/>
+ 
+@@ -195,23 +195,23 @@ This starts the API server at `http://localhost:3100`. An embedded PostgreSQL da
+ ## FAQ
+ 
+ **What does a typical setup look like?**
+-Locally, a single Node.js process manages an embedded Postgres and local file storage. For production, point it at your own Postgres and deploy however you like. Configure projects, agents, and goals — the agents take care of the rest.
++Locally, a single Node.js process manages an embedded Postgres and local file storage. For deployment, point it at your own Postgres and deploy however you like. Configure episodes, writers, and story arcs — the writers take care of the rest.
+ 
+ If you're a solo-entreprenuer you can use Tailscale to access Paperclip on the go. Then later you can deploy to e.g. Vercel when you need it.
+ 
+-**Can I run multiple companies?**
+-Yes. A single deployment can run an unlimited number of companies with complete data isolation.
++**Can I run multiple productions?**
++Yes. A single deployment can run an unlimited number of productions with complete data isolation.
+ 
+ **How is Paperclip different from agents like OpenClaw or Claude Code?**
+-Paperclip _uses_ those agents. It orchestrates them into a company — with org charts, budgets, goals, governance, and accountability.
++Paperclip _uses_ those agents. It orchestrates them into a production — with room hierarchies, budgets, story arcs, governance, and accountability.
+ 
+ **Why should I use Paperclip instead of just pointing my OpenClaw to Asana or Trello?**
+-Agent orchestration has subtleties in how you coordinate who has work checked out, how to maintain sessions, monitoring costs, establishing governance - Paperclip does this for you.
++Writer orchestration has subtleties in how you coordinate who has work checked out, how to maintain sessions, monitoring budgets, establishing governance - Paperclip does this for you.
+ 
+ (Bring-your-own-ticket-system is on the Roadmap)
+ 
+-**Do agents run continuously?**
+-By default, agents run on scheduled heartbeats and event-based triggers (task assignment, @-mentions). You can also hook in continuous agents like OpenClaw. You bring your agent and Paperclip coordinates.
++**Do writers run continuously?**
++By default, writers run on scheduled writing sessions and event-based triggers (assignment, @-mentions). You can also hook in continuous writers like OpenClaw. You bring your writer and Paperclip coordinates.
+ 
+ <br/>
+ 
+@@ -236,8 +236,8 @@ See [doc/DEVELOPING.md](doc/DEVELOPING.md) for the full development guide.
+ 
+ - ⚪ Get OpenClaw onboarding easier
+ - ⚪ Get cloud agents working e.g. Cursor / e2b agents
+-- ⚪ ClipMart - buy and sell entire agent companies
+-- ⚪ Easy agent configurations / easier to understand
++- ⚪ ClipMart - download and run entire productions
++- ⚪ Easy writer configurations / easier to understand
+ - ⚪ Better support for harness engineering
+ - ⚪ Plugin system (e.g. if you want to add a knowledgebase, custom tracing, queues, etc)
+ - ⚪ Better docs
+@@ -277,5 +277,5 @@ MIT &copy; 2026 Paperclip
+ </p>
+ 
+ <p align="center">
+-  <sub>Open source under MIT. Built for people who want to run companies, not babysit agents.</sub>
++  <sub>Open source under MIT. Built for people who want to run productions, not babysit writers.</sub>
+ </p>
+diff --git a/cli/src/commands/auth-bootstrap-ceo.ts b/cli/src/commands/auth-bootstrap-ceo.ts
+index a844c44..8a084d1 100644
+--- a/cli/src/commands/auth-bootstrap-ceo.ts
++++ b/cli/src/commands/auth-bootstrap-ceo.ts
+@@ -89,7 +89,7 @@ export async function bootstrapCeoInvite(opts: {
+       .set({ revokedAt: now, updatedAt: now })
+       .where(
+         and(
+-          eq(invites.inviteType, "bootstrap_ceo"),
++          eq(invites.inviteType, "bootstrap_showrunner"),
+           isNull(invites.revokedAt),
+           isNull(invites.acceptedAt),
+           gt(invites.expiresAt, now),
+@@ -101,7 +101,7 @@ export async function bootstrapCeoInvite(opts: {
+     const created = await db
+       .insert(invites)
+       .values({
+-        inviteType: "bootstrap_ceo",
++        inviteType: "bootstrap_showrunner",
+         tokenHash: hashToken(token),
+         allowedJoinTypes: "human",
+         expiresAt: new Date(Date.now() + expiresHours * 60 * 60 * 1000),
+diff --git a/cli/src/commands/client/approval.ts b/cli/src/commands/client/approval.ts
+index 16d97d4..858f09e 100644
+--- a/cli/src/commands/client/approval.ts
++++ b/cli/src/commands/client/approval.ts
+@@ -111,7 +111,7 @@ export function registerApprovalCommands(program: Command): void {
+       .command("create")
+       .description("Create an approval request")
+       .requiredOption("-C, --company-id <id>", "Company ID")
+-      .requiredOption("--type <type>", "Approval type (hire_agent|approve_ceo_strategy)")
++      .requiredOption("--type <type>", "Approval type (onboard_writer|approve_showrunner_vision)")
+       .requiredOption("--payload <json>", "Approval payload as JSON object")
+       .option("--requested-by-agent-id <id>", "Requesting agent ID")
+       .option("--issue-ids <csv>", "Comma-separated linked issue IDs")
+diff --git a/doc/GOAL.md b/doc/GOAL.md
+index f32399f..20cdcc3 100644
+--- a/doc/GOAL.md
++++ b/doc/GOAL.md
+@@ -1,29 +1,29 @@
+ # Paperclip
+ 
+-**Paperclip is the backbone of the autonomous economy.** We are building the infrastructure that autonomous AI companies run on. Our goal is for Paperclip-powered companies to collectively generate economic output that rivals the GDP of the world's largest countries. Every decision we make should serve that: make autonomous companies more capable, more governable, more scalable, and more real.
++**Paperclip is the backbone of AI-powered storytelling.** We are building the infrastructure that autonomous AI writers rooms run on. Our goal is for Paperclip-powered writers rooms to collectively produce creative output that rivals the most prolific studios in history. Every decision we make should serve that: make writers rooms more capable, more governable, more scalable, and more real.
+ 
+ ## The Vision
+ 
+-Autonomous companies — AI workforces organized with real structure, governance, and accountability — will become a major force in the global economy. Not one company. Thousands. Millions. An entire economic layer that runs on AI labor, coordinated through Paperclip.
++Autonomous writers rooms — AI writing teams organized with real structure, governance, and accountability — will become a major force in creative production. Not one room. Thousands. An entire creative layer that runs on AI talent, coordinated through Paperclip.
+ 
+-Paperclip is not the company. Paperclip is what makes the companies possible. We are the control plane, the nervous system, the operating layer. Every autonomous company needs structure, task management, cost control, goal alignment, and human governance. That's us. We are to autonomous companies what the corporate operating system is to human ones — except this time, the operating system is real software, not metaphor.
++Paperclip is not the writers room. Paperclip is what makes writers rooms possible. We are the control plane, the nervous system, the operating layer. Every autonomous writers room needs structure, assignment management, budget control, story arc alignment, and human governance. That's us. We are to autonomous writers rooms what the showrunner's office is to human ones — except this time, the operating system is real software, not metaphor.
+ 
+-The measure of our success is not whether one company works. It's whether Paperclip becomes the default foundation that autonomous companies are built on — and whether those companies, collectively, become a serious economic force that rivals the output of nations.
++The measure of our success is not whether one room works. It's whether Paperclip becomes the default foundation that autonomous writers rooms are built on — and whether those rooms, collectively, become a serious creative force.
+ 
+ ## The Problem
+ 
+-Task management software doesn't go far enough. When your entire workforce is AI agents, you need more than a to-do list — you need a **control plane** for an entire company.
++Task management software doesn't go far enough. When your entire writing staff is AI writers, you need more than a to-do list — you need a **control plane** for an entire writers room.
+ 
+ ## What This Is
+ 
+-Paperclip is the command, communication, and control plane for a company of AI agents. It is the single place where you:
++Paperclip is the command, communication, and control plane for a writers room of AI writers. It is the single place where you:
+ 
+-- **Manage agents as employees** — hire, organize, and track who does what
+-- **Define org structure** — org charts that agents themselves operate within
+-- **Track work in real time** — see at any moment what every agent is working on
+-- **Control costs** — token salary budgets per agent, spend tracking, burn rate
+-- **Align to goals** — agents see how their work serves the bigger mission
+-- **Store company knowledge** — a shared brain for the organization
++- **Manage writers as staff** — onboard, organize, and track who does what
++- **Define room hierarchy** — org charts that writers themselves operate within
++- **Track work in real time** — see at any moment what every writer is working on
++- **Control costs** — token salary budgets per writer, spend tracking, burn rate
++- **Align to story arcs** — writers see how their work serves the bigger creative vision
++- **Store room knowledge** — a shared brain for the production
+ 
+ ## Architecture
+ 
+@@ -33,23 +33,23 @@ Two layers:
+ 
+ The central nervous system. Manages:
+ 
+-- Agent registry and org chart
+-- Task assignment and status
++- Writer registry and room hierarchy
++- Assignment tracking and status
+ - Budget and token spend tracking
+-- Company knowledge base
+-- Goal hierarchy (company → team → agent → task)
+-- Heartbeat monitoring — know when agents are alive, idle, or stuck
++- Production knowledge base
++- Story arc hierarchy (production → room → writer → assignment)
++- Writing session monitoring — know when writers are active, idle, or stuck
+ 
+ ### 2. Execution Services (adapters)
+ 
+-Agents run externally and report into the control plane. An agent is just Python code that gets kicked off and does work. Adapters connect different execution environments:
++Writers run externally and report into the control plane. A writer is just code that gets kicked off and does work. Adapters connect different execution environments:
+ 
+ - **OpenClaw** — initial adapter target
+-- **Heartbeat loop** — simple custom Python that loops, checks in, does work
++- **Writing session loop** — simple custom code that loops, checks in, does work
+ - **Others** — any runtime that can call an API
+ 
+-The control plane doesn't run agents. It orchestrates them. Agents run wherever they run and phone home.
++The control plane doesn't run writers. It orchestrates them. Writers run wherever they run and phone home.
+ 
+ ## Core Principle
+ 
+-You should be able to look at Paperclip and understand your entire company at a glance — who's doing what, how much it costs, and whether it's working.
++You should be able to look at Paperclip and understand your entire writers room at a glance — who's writing what, how much it costs, and whether it's working.
+diff --git a/doc/PRODUCT.md b/doc/PRODUCT.md
+index 741df66..b2d71ac 100644
+--- a/doc/PRODUCT.md
++++ b/doc/PRODUCT.md
+@@ -2,85 +2,85 @@
+ 
+ ## What It Is
+ 
+-Paperclip is the control plane for autonomous AI companies. One instance of Paperclip can run multiple companies. A **company** is a first-order object.
++Paperclip is the control plane for autonomous AI writers rooms. One instance of Paperclip can run multiple productions. A **production** is a first-order object.
+ 
+ ## Core Concepts
+ 
+-### Company
++### Production
+ 
+-A company has:
++A production has:
+ 
+-- A **goal** — the reason it exists ("Create the #1 AI note-taking app that does $1M MRR within 3 months")
+-- **Employees** — every employee is an AI agent
+-- **Org structure** — who reports to whom
+-- **Revenue & expenses** — tracked at the company level
+-- **Task hierarchy** — all work traces back to the company goal
++- A **story arc** — the reason it exists ("Create a gripping 10-episode thriller series that wins critical acclaim")
++- **Staff** — every staff member is an AI writer
++- **Room hierarchy** — who reports to whom
++- **Revenue & expenses** — tracked at the production level
++- **Assignment hierarchy** — all work traces back to the production's story arc
+ 
+-### Employees & Agents
++### Staff & Writers
+ 
+-Every employee is an agent. When you create a company, you start by defining the CEO, then build out from there.
++Every staff member is a writer. When you create a production, you start by defining the Showrunner, then build out from there.
+ 
+-Each employee has:
++Each writer has:
+ 
+-- **Adapter type + config** — how this agent runs and what defines its identity/behavior. This is adapter-specific (e.g., an OpenClaw agent might use SOUL.md and HEARTBEAT.md files; a Claude Code agent might use CLAUDE.md; a bare script might use CLI args). Paperclip doesn't prescribe the format — the adapter does.
++- **Adapter type + config** — how this writer runs and what defines its identity/behavior. This is adapter-specific (e.g., an OpenClaw writer might use SOUL.md and HEARTBEAT.md files; a Claude Code writer might use CLAUDE.md; a bare script might use CLI args). Paperclip doesn't prescribe the format — the adapter does.
+ - **Role & reporting** — their title, who they report to, who reports to them
+-- **Capabilities description** — a short paragraph on what this agent does and when they're relevant (helps other agents discover who can help with what)
++- **Capabilities description** — a short paragraph on what this writer does and when they're relevant (helps other writers discover who can help with what)
+ 
+-Example: A CEO agent's adapter config tells it to "review what your executives are doing, check company metrics, reprioritize if needed, assign new strategic initiatives" on each heartbeat. An engineer's config tells it to "check assigned tasks, pick the highest priority, and work it."
++Example: A Showrunner writer's adapter config tells it to "review what your head writers are doing, check production metrics, reprioritize if needed, assign new creative initiatives" on each writing session. A staff writer's config tells it to "check assigned assignments, pick the highest priority, and work it."
+ 
+-Then you define who reports to the CEO: a CTO managing programmers, a CMO managing the marketing team, and so on. Every agent in the tree gets their own adapter configuration.
++Then you define who reports to the Showrunner: a Head Writer managing staff writers, a Story Editor managing the narrative team, and so on. Every writer in the tree gets their own adapter configuration.
+ 
+-### Agent Execution
++### Writer Execution
+ 
+-There are two fundamental modes for running an agent's heartbeat:
++There are two fundamental modes for running a writer's writing session:
+ 
+-1. **Run a command** — Paperclip kicks off a process (shell command, Python script, etc.) and tracks it. The heartbeat is "execute this and monitor it."
+-2. **Fire and forget a request** — Paperclip sends a webhook/API call to an externally running agent. The heartbeat is "notify this agent to wake up." (OpenClaw hooks work this way.)
++1. **Run a command** — Paperclip kicks off a process (shell command, Python script, etc.) and tracks it. The writing session is "execute this and monitor it."
++2. **Fire and forget a request** — Paperclip sends a webhook/API call to an externally running writer. The writing session is "notify this writer to wake up." (OpenClaw hooks work this way.)
+ 
+-We provide sensible defaults — a default agent that shells out to Claude Code or Codex with your configuration, remembers session IDs, runs basic scripts. But you can plug in anything.
++We provide sensible defaults — a default writer that shells out to Claude Code or Codex with your configuration, remembers session IDs, runs basic scripts. But you can plug in anything.
+ 
+-### Task Management
++### Assignment Management
+ 
+-Task management is hierarchical. At any moment, every piece of work must trace back to the company's top-level goal through a chain of parent tasks:
++Assignment management is hierarchical. At any moment, every piece of work must trace back to the production's top-level story arc through a chain of parent assignments:
+ 
+ ```
+-I am researching the Facebook ads Granola uses (current task)
+-  because → I need to create Facebook ads for our software (parent)
+-    because → I need to grow new signups by 100 users (parent)
+-      because → I need to get revenue to $2,000 this week (parent)
++I am researching Breaking Bad's pilot cold open structure (current assignment)
++  because → I need to draft the cold open for Episode 1 (parent)
++    because → I need to complete the Episode 1 script (parent)
++      because → I need to deliver the first batch of scripts (parent)
+         because → ...
+-          because → We're building the #1 AI note-taking app to $1M MRR in 3 months
++          because → We're creating a gripping 10-episode thriller series
+ ```
+ 
+-Tasks have parentage. Every task exists in service of a parent task, all the way up to the company goal. This is what keeps autonomous agents aligned — they can always answer "why am I doing this?"
++Assignments have parentage. Every assignment exists in service of a parent assignment, all the way up to the production's story arc. This is what keeps autonomous writers aligned — they can always answer "why am I writing this?"
+ 
+-More detailed task structure TBD.
++More detailed assignment structure TBD.
+ 
+ ## Principles
+ 
+-1. **Unopinionated about how you run your agents.** Your agents could be OpenClaw bots, Python scripts, Node scripts, Claude Code sessions, Codex instances — we don't care. Paperclip defines the control plane for communication and provides utility infrastructure for heartbeats. It does not mandate an agent runtime.
++1. **Unopinionated about how you run your writers.** Your writers could be OpenClaw bots, Python scripts, Node scripts, Claude Code sessions, Codex instances — we don't care. Paperclip defines the control plane for communication and provides utility infrastructure for writing sessions. It does not mandate a writer runtime.
+ 
+-2. **Company is the unit of organization.** Everything lives under a company. One Paperclip instance, many companies.
++2. **Production is the unit of organization.** Everything lives under a production. One Paperclip instance, many productions.
+ 
+-3. **Adapter config defines the agent.** Every agent has an adapter type and configuration that controls its identity and behavior. The minimum contract is just "be callable."
++3. **Adapter config defines the writer.** Every writer has an adapter type and configuration that controls its identity and behavior. The minimum contract is just "be callable."
+ 
+-4. **All work traces to the goal.** Hierarchical task management means nothing exists in isolation. If you can't explain why a task matters to the company goal, it shouldn't exist.
++4. **All work traces to the story arc.** Hierarchical assignment management means nothing exists in isolation. If you can't explain why an assignment matters to the production's story arc, it shouldn't exist.
+ 
+-5. **Control plane, not execution plane.** Paperclip orchestrates. Agents run wherever they run and phone home.
++5. **Control plane, not execution plane.** Paperclip orchestrates. Writers run wherever they run and phone home.
+ 
+ ## User Flow (Dream Scenario)
+ 
+-1. Open Paperclip, create a new company
+-2. Define the company's goal: "Create the #1 AI note-taking app, $1M MRR in 3 months"
+-3. Create the CEO
++1. Open Paperclip, create a new production
++2. Define the production's story arc: "Create a gripping 10-episode thriller series that wins critical acclaim"
++3. Create the Showrunner
+    - Choose an adapter (e.g., process adapter for Claude Code, HTTP adapter for OpenClaw)
+-   - Configure the adapter (agent identity, loop behavior, execution settings)
+-   - CEO proposes strategic breakdown → board approves
+-4. Define the CEO's reports: CTO, CMO, CFO, etc.
++   - Configure the adapter (writer identity, loop behavior, execution settings)
++   - Showrunner proposes creative breakdown → executive producer greenlights
++4. Define the Showrunner's reports: Head Writer, Story Editor, Script Coordinator, etc.
+    - Each gets their own adapter config and role definition
+-5. Define their reports: engineers under CTO, marketers under CMO, etc.
+-6. Set budgets, define initial strategic tasks
+-7. Hit go — agents start their heartbeats and the company runs
++5. Define their reports: staff writers under Head Writer, etc.
++6. Set budgets, define initial creative assignments
++7. Hit go — writers start their writing sessions and the room runs
+ 
+ ## Guidelines
+ 
+@@ -93,4 +93,4 @@ Canonical mode design and command expectations live in `doc/DEPLOYMENT-MODES.md`
+ 
+ ## Further Detail
+ 
+-See [SPEC.md](./SPEC.md) for the full technical specification and [TASKS.md](./TASKS.md) for the task management data model.
++See [SPEC.md](./SPEC.md) for the full technical specification and [TASKS.md](./TASKS.md) for the assignment management data model.
+diff --git a/packages/db/src/migrations/0026_writers_room_rebrand.sql b/packages/db/src/migrations/0026_writers_room_rebrand.sql
+new file mode 100644
+index 0000000..0893eb6
+--- /dev/null
++++ b/packages/db/src/migrations/0026_writers_room_rebrand.sql
+@@ -0,0 +1,30 @@
++-- Migration: Rebrand from corporate to Hollywood Writers Room terminology
++-- Updates existing data to use new role, approval type, invite type, and goal level values
++
++-- Update agent roles
++UPDATE agents SET role = 'showrunner' WHERE role = 'ceo';
++UPDATE agents SET role = 'head_writer' WHERE role = 'cto';
++UPDATE agents SET role = 'story_editor' WHERE role = 'cmo';
++UPDATE agents SET role = 'script_coordinator' WHERE role = 'cfo';
++UPDATE agents SET role = 'staff_writer' WHERE role = 'engineer';
++UPDATE agents SET role = 'creative_consultant' WHERE role = 'designer';
++UPDATE agents SET role = 'writers_assistant' WHERE role = 'pm';
++UPDATE agents SET role = 'continuity_editor' WHERE role = 'qa';
++UPDATE agents SET role = 'room_runner' WHERE role = 'devops';
++
++-- Update approval types
++UPDATE approvals SET type = 'onboard_writer' WHERE type = 'hire_agent';
++UPDATE approvals SET type = 'approve_showrunner_vision' WHERE type = 'approve_ceo_strategy';
++
++-- Update goal levels
++UPDATE goals SET level = 'production' WHERE level = 'company';
++UPDATE goals SET level = 'room' WHERE level = 'team';
++UPDATE goals SET level = 'writer' WHERE level = 'agent';
++UPDATE goals SET level = 'assignment' WHERE level = 'task';
++
++-- Update invite types
++UPDATE invites SET invite_type = 'production_join' WHERE invite_type = 'company_join';
++UPDATE invites SET invite_type = 'bootstrap_showrunner' WHERE invite_type = 'bootstrap_ceo';
++
++-- Update default for invites table
++ALTER TABLE invites ALTER COLUMN invite_type SET DEFAULT 'production_join';
+diff --git a/packages/db/src/schema/invites.ts b/packages/db/src/schema/invites.ts
+index 1064aed..72f6495 100644
+--- a/packages/db/src/schema/invites.ts
++++ b/packages/db/src/schema/invites.ts
+@@ -6,7 +6,7 @@ export const invites = pgTable(
+   {
+     id: uuid("id").primaryKey().defaultRandom(),
+     companyId: uuid("company_id").references(() => companies.id),
+-    inviteType: text("invite_type").notNull().default("company_join"),
++    inviteType: text("invite_type").notNull().default("production_join"),
+     tokenHash: text("token_hash").notNull(),
+     allowedJoinTypes: text("allowed_join_types").notNull().default("both"),
+     defaultsPayload: jsonb("defaults_payload").$type<Record<string, unknown> | null>(),
+diff --git a/packages/db/src/seed.ts b/packages/db/src/seed.ts
+index ff6e4f6..d53b897 100644
+--- a/packages/db/src/seed.ts
++++ b/packages/db/src/seed.ts
+@@ -11,38 +11,38 @@ console.log("Seeding database...");
+ const [company] = await db
+   .insert(companies)
+   .values({
+-    name: "Paperclip Demo Co",
+-    description: "A demo autonomous company",
++    name: "Writers Room Demo",
++    description: "A demo writers room production",
+     status: "active",
+     budgetMonthlyCents: 50000,
+   })
+   .returning();
+ 
+-const [ceo] = await db
++const [showrunner] = await db
+   .insert(agents)
+   .values({
+     companyId: company!.id,
+-    name: "CEO Agent",
+-    role: "ceo",
+-    title: "Chief Executive Officer",
++    name: "Showrunner",
++    role: "showrunner",
++    title: "Head of the Room",
+     status: "idle",
+     adapterType: "process",
+-    adapterConfig: { command: "echo", args: ["hello from ceo"] },
++    adapterConfig: { command: "echo", args: ["hello from showrunner"] },
+     budgetMonthlyCents: 15000,
+   })
+   .returning();
+ 
+-const [engineer] = await db
++const [staffWriter] = await db
+   .insert(agents)
+   .values({
+     companyId: company!.id,
+-    name: "Engineer Agent",
+-    role: "engineer",
+-    title: "Software Engineer",
++    name: "Staff Writer",
++    role: "staff_writer",
++    title: "Staff Writer",
+     status: "idle",
+-    reportsTo: ceo!.id,
++    reportsTo: showrunner!.id,
+     adapterType: "process",
+-    adapterConfig: { command: "echo", args: ["hello from engineer"] },
++    adapterConfig: { command: "echo", args: ["hello from staff writer"] },
+     budgetMonthlyCents: 10000,
+   })
+   .returning();
+@@ -51,11 +51,11 @@ const [goal] = await db
+   .insert(goals)
+   .values({
+     companyId: company!.id,
+-    title: "Ship V1",
+-    description: "Deliver first control plane release",
+-    level: "company",
++    title: "Season 1 Pilot",
++    description: "Write and deliver the pilot episode",
++    level: "production",
+     status: "active",
+-    ownerAgentId: ceo!.id,
++    ownerAgentId: showrunner!.id,
+   })
+   .returning();
+ 
+@@ -64,10 +64,10 @@ const [project] = await db
+   .values({
+     companyId: company!.id,
+     goalId: goal!.id,
+-    name: "Control Plane MVP",
+-    description: "Implement core board + agent loop",
++    name: "Episode 1: Pilot",
++    description: "Draft and polish the pilot episode script",
+     status: "in_progress",
+-    leadAgentId: ceo!.id,
++    leadAgentId: showrunner!.id,
+   })
+   .returning();
+ 
+@@ -76,22 +76,22 @@ await db.insert(issues).values([
+     companyId: company!.id,
+     projectId: project!.id,
+     goalId: goal!.id,
+-    title: "Implement atomic task checkout",
+-    description: "Ensure in_progress claiming is conflict-safe",
++    title: "Write cold open for pilot",
++    description: "Draft the teaser/cold open scene for episode 1",
+     status: "todo",
+     priority: "high",
+-    assigneeAgentId: engineer!.id,
+-    createdByAgentId: ceo!.id,
++    assigneeAgentId: staffWriter!.id,
++    createdByAgentId: showrunner!.id,
+   },
+   {
+     companyId: company!.id,
+     projectId: project!.id,
+     goalId: goal!.id,
+-    title: "Add budget auto-pause",
+-    description: "Pause agent at hard budget ceiling",
++    title: "Develop character bibles",
++    description: "Create detailed backstories for the main cast",
+     status: "backlog",
+     priority: "medium",
+-    createdByAgentId: ceo!.id,
++    createdByAgentId: showrunner!.id,
+   },
+ ]);
+ 
+diff --git a/packages/shared/src/constants.ts b/packages/shared/src/constants.ts
+index ba75dc8..2168556 100644
+--- a/packages/shared/src/constants.ts
++++ b/packages/shared/src/constants.ts
+@@ -34,30 +34,30 @@ export const AGENT_ADAPTER_TYPES = [
+ export type AgentAdapterType = (typeof AGENT_ADAPTER_TYPES)[number];
+ 
+ export const AGENT_ROLES = [
+-  "ceo",
+-  "cto",
+-  "cmo",
+-  "cfo",
+-  "engineer",
+-  "designer",
+-  "pm",
+-  "qa",
+-  "devops",
++  "showrunner",
++  "head_writer",
++  "story_editor",
++  "script_coordinator",
++  "staff_writer",
++  "creative_consultant",
++  "writers_assistant",
++  "continuity_editor",
++  "room_runner",
+   "researcher",
+   "general",
+ ] as const;
+ export type AgentRole = (typeof AGENT_ROLES)[number];
+ 
+ export const AGENT_ROLE_LABELS: Record<AgentRole, string> = {
+-  ceo: "CEO",
+-  cto: "CTO",
+-  cmo: "CMO",
+-  cfo: "CFO",
+-  engineer: "Engineer",
+-  designer: "Designer",
+-  pm: "PM",
+-  qa: "QA",
+-  devops: "DevOps",
++  showrunner: "Showrunner",
++  head_writer: "Head Writer",
++  story_editor: "Story Editor",
++  script_coordinator: "Script Coordinator",
++  staff_writer: "Staff Writer",
++  creative_consultant: "Creative Consultant",
++  writers_assistant: "Writers' Assistant",
++  continuity_editor: "Continuity Editor",
++  room_runner: "Room Runner",
+   researcher: "Researcher",
+   general: "General",
+ };
+@@ -104,6 +104,14 @@ export const AGENT_ICON_NAMES = [
+   "hexagon",
+   "pentagon",
+   "fingerprint",
++  "pen-tool",
++  "scroll",
++  "film",
++  "clapperboard",
++  "drama",
++  "feather",
++  "book-open",
++  "theater",
+ ] as const;
+ export type AgentIconName = (typeof AGENT_ICON_NAMES)[number];
+ 
+@@ -121,7 +129,7 @@ export type IssueStatus = (typeof ISSUE_STATUSES)[number];
+ export const ISSUE_PRIORITIES = ["critical", "high", "medium", "low"] as const;
+ export type IssuePriority = (typeof ISSUE_PRIORITIES)[number];
+ 
+-export const GOAL_LEVELS = ["company", "team", "agent", "task"] as const;
++export const GOAL_LEVELS = ["production", "room", "writer", "assignment"] as const;
+ export type GoalLevel = (typeof GOAL_LEVELS)[number];
+ 
+ export const GOAL_STATUSES = ["planned", "active", "achieved", "cancelled"] as const;
+@@ -149,7 +157,7 @@ export const PROJECT_COLORS = [
+   "#3b82f6", // blue
+ ] as const;
+ 
+-export const APPROVAL_TYPES = ["hire_agent", "approve_ceo_strategy"] as const;
++export const APPROVAL_TYPES = ["onboard_writer", "approve_showrunner_vision"] as const;
+ export type ApprovalType = (typeof APPROVAL_TYPES)[number];
+ 
+ export const APPROVAL_STATUSES = [
+@@ -224,7 +232,7 @@ export type MembershipStatus = (typeof MEMBERSHIP_STATUSES)[number];
+ export const INSTANCE_USER_ROLES = ["instance_admin"] as const;
+ export type InstanceUserRole = (typeof INSTANCE_USER_ROLES)[number];
+ 
+-export const INVITE_TYPES = ["company_join", "bootstrap_ceo"] as const;
++export const INVITE_TYPES = ["production_join", "bootstrap_showrunner"] as const;
+ export type InviteType = (typeof INVITE_TYPES)[number];
+ 
+ export const INVITE_JOIN_TYPES = ["human", "agent", "both"] as const;
+diff --git a/packages/shared/src/validators/goal.ts b/packages/shared/src/validators/goal.ts
+index 63ca9d8..9412652 100644
+--- a/packages/shared/src/validators/goal.ts
++++ b/packages/shared/src/validators/goal.ts
+@@ -4,7 +4,7 @@ import { GOAL_LEVELS, GOAL_STATUSES } from "../constants.js";
+ export const createGoalSchema = z.object({
+   title: z.string().min(1),
+   description: z.string().optional().nullable(),
+-  level: z.enum(GOAL_LEVELS).optional().default("task"),
++  level: z.enum(GOAL_LEVELS).optional().default("assignment"),
+   status: z.enum(GOAL_STATUSES).optional().default("planned"),
+   parentId: z.string().uuid().optional().nullable(),
+   ownerAgentId: z.string().uuid().optional().nullable(),
+diff --git a/server/src/routes/access.ts b/server/src/routes/access.ts
+index c13366f..a79a5b0 100644
+--- a/server/src/routes/access.ts
++++ b/server/src/routes/access.ts
+@@ -1324,14 +1324,14 @@ type JoinRequestManagerCandidate = {
+ export function resolveJoinRequestAgentManagerId(
+   candidates: JoinRequestManagerCandidate[]
+ ): string | null {
+-  const ceoCandidates = candidates.filter(
+-    (candidate) => candidate.role === "ceo"
++  const showrunnerCandidates = candidates.filter(
++    (candidate) => candidate.role === "showrunner"
+   );
+-  if (ceoCandidates.length === 0) return null;
+-  const rootCeo = ceoCandidates.find(
++  if (showrunnerCandidates.length === 0) return null;
++  const rootShowrunner = showrunnerCandidates.find(
+     (candidate) => candidate.reportsTo === null
+   );
+-  return (rootCeo ?? ceoCandidates[0] ?? null)?.id ?? null;
++  return (rootShowrunner ?? showrunnerCandidates[0] ?? null)?.id ?? null;
+ }
+ 
+ function isInviteTokenHashCollisionError(error: unknown) {
+@@ -1543,8 +1543,8 @@ export function accessRoutes(
+       if (!actorAgent || actorAgent.companyId !== companyId) {
+         throw forbidden("Agent key cannot access another company");
+       }
+-      if (actorAgent.role !== "ceo") {
+-        throw forbidden("Only CEO agents can generate OpenClaw invite prompts");
++      if (actorAgent.role !== "showrunner") {
++        throw forbidden("Only Showrunner writers can generate OpenClaw invite prompts");
+       }
+       return;
+     }
+@@ -1567,7 +1567,7 @@ export function accessRoutes(
+         : null;
+     const insertValues = {
+       companyId: input.companyId,
+-      inviteType: "company_join" as const,
++      inviteType: "production_join" as const,
+       allowedJoinTypes: input.allowedJoinTypes,
+       defaultsPayload: mergeInviteDefaults(
+         input.defaultsPayload ?? null,
+@@ -1833,7 +1833,7 @@ export function accessRoutes(
+             .then((rows) => rows[0] ?? null)
+         : null;
+ 
+-      if (invite.inviteType === "bootstrap_ceo") {
++      if (invite.inviteType === "bootstrap_showrunner") {
+         if (inviteAlreadyAccepted) throw notFound("Invite not found");
+         if (req.body.requestType !== "human") {
+           throw badRequest("Bootstrap invite requires human request type");
+@@ -2206,7 +2206,7 @@ export function accessRoutes(
+       .where(eq(invites.id, id))
+       .then((rows) => rows[0] ?? null);
+     if (!invite) throw notFound("Invite not found");
+-    if (invite.inviteType === "bootstrap_ceo") {
++    if (invite.inviteType === "bootstrap_showrunner") {
+       await assertInstanceAdmin(req);
+     } else {
+       if (!invite.companyId) throw conflict("Invite is missing company scope");
+diff --git a/server/src/routes/agents.ts b/server/src/routes/agents.ts
+index d150bb1..384afe1 100644
+--- a/server/src/routes/agents.ts
++++ b/server/src/routes/agents.ts
+@@ -112,7 +112,7 @@ export function agentRoutes(db: Db) {
+     }
+ 
+     if (actorAgent.id === targetAgent.id) return;
+-    if (actorAgent.role === "ceo") return;
++    if (actorAgent.role === "showrunner") return;
+     const allowedByGrant = await access.hasPermission(
+       targetAgent.companyId,
+       "agent",
+@@ -120,7 +120,7 @@ export function agentRoutes(db: Db) {
+       "agents:create",
+     );
+     if (allowedByGrant || canCreateAgents(actorAgent)) return;
+-    throw forbidden("Only CEO or agent creators can modify other agents");
++    throw forbidden("Only Showrunner or writer creators can modify other writers");
+   }
+ 
+   async function resolveCompanyIdForAgentReference(req: Request): Promise<string | null> {
+@@ -694,7 +694,7 @@ export function agentRoutes(db: Db) {
+           ((normalizedHireInput.metadata ?? agent.metadata ?? {}) as Record<string, unknown>),
+         ) ?? {};
+       approval = await approvalsSvc.create(companyId, {
+-        type: "hire_agent",
++        type: "onboard_writer",
+         requestedByAgentId: actor.actorType === "agent" ? actor.actorId : null,
+         requestedByUserId: actor.actorType === "user" ? actor.actorId : null,
+         status: "pending",
+@@ -832,8 +832,8 @@ export function agentRoutes(db: Db) {
+         res.status(403).json({ error: "Forbidden" });
+         return;
+       }
+-      if (actorAgent.role !== "ceo") {
+-        res.status(403).json({ error: "Only CEO can manage permissions" });
++      if (actorAgent.role !== "showrunner") {
++        res.status(403).json({ error: "Only Showrunner can manage permissions" });
+         return;
+       }
+     }
+diff --git a/server/src/routes/approvals.ts b/server/src/routes/approvals.ts
+index f990343..dc05968 100644
+--- a/server/src/routes/approvals.ts
++++ b/server/src/routes/approvals.ts
+@@ -63,7 +63,7 @@ export function approvalRoutes(db: Db) {
+     const uniqueIssueIds = Array.from(new Set(issueIds));
+     const { issueIds: _issueIds, ...approvalInput } = req.body;
+     const normalizedPayload =
+-      approvalInput.type === "hire_agent"
++      approvalInput.type === "onboard_writer"
+         ? await secretsSvc.normalizeHireApprovalPayloadForPersistence(
+             companyId,
+             approvalInput.payload,
+@@ -265,7 +265,7 @@ export function approvalRoutes(db: Db) {
+     }
+ 
+     const normalizedPayload = req.body.payload
+-      ? existing.type === "hire_agent"
++      ? existing.type === "onboard_writer"
+         ? await secretsSvc.normalizeHireApprovalPayloadForPersistence(
+             existing.companyId,
+             req.body.payload,
+diff --git a/server/src/routes/issues.ts b/server/src/routes/issues.ts
+index e4035df..776f6ae 100644
+--- a/server/src/routes/issues.ts
++++ b/server/src/routes/issues.ts
+@@ -78,13 +78,13 @@ export function issueRoutes(db: Db, storage: StorageService) {
+       res.status(403).json({ error: "Forbidden" });
+       return false;
+     }
+-    if (actorAgent.role === "ceo" || Boolean(actorAgent.permissions?.canCreateAgents)) return true;
+-    res.status(403).json({ error: "Missing permission to link approvals" });
++    if (actorAgent.role === "showrunner" || Boolean(actorAgent.permissions?.canCreateAgents)) return true;
++    res.status(403).json({ error: "Missing permission to link greenlights" });
+     return false;
+   }
+ 
+   function canCreateAgentsLegacy(agent: { permissions: Record<string, unknown> | null | undefined; role: string }) {
+-    if (agent.role === "ceo") return true;
++    if (agent.role === "showrunner") return true;
+     if (!agent.permissions || typeof agent.permissions !== "object") return false;
+     return Boolean((agent.permissions as Record<string, unknown>).canCreateAgents);
+   }
+diff --git a/server/src/services/agent-permissions.ts b/server/src/services/agent-permissions.ts
+index a0379c9..34ad866 100644
+--- a/server/src/services/agent-permissions.ts
++++ b/server/src/services/agent-permissions.ts
+@@ -4,7 +4,7 @@ export type NormalizedAgentPermissions = Record<string, unknown> & {
+ 
+ export function defaultPermissionsForRole(role: string): NormalizedAgentPermissions {
+   return {
+-    canCreateAgents: role === "ceo",
++    canCreateAgents: role === "showrunner",
+   };
+ }
+ 
+diff --git a/server/src/services/approvals.ts b/server/src/services/approvals.ts
+index ba2890a..dac0096 100644
+--- a/server/src/services/approvals.ts
++++ b/server/src/services/approvals.ts
+@@ -61,7 +61,7 @@ export function approvalService(db: Db) {
+         .then((rows) => rows[0]);
+ 
+       let hireApprovedAgentId: string | null = null;
+-      if (updated.type === "hire_agent") {
++      if (updated.type === "onboard_writer") {
+         const payload = updated.payload as Record<string, unknown>;
+         const payloadAgentId = typeof payload.agentId === "string" ? payload.agentId : null;
+         if (payloadAgentId) {
+@@ -126,7 +126,7 @@ export function approvalService(db: Db) {
+         .returning()
+         .then((rows) => rows[0]);
+ 
+-      if (updated.type === "hire_agent") {
++      if (updated.type === "onboard_writer") {
+         const payload = updated.payload as Record<string, unknown>;
+         const payloadAgentId = typeof payload.agentId === "string" ? payload.agentId : null;
+         if (payloadAgentId) {
+diff --git a/server/src/services/hire-hook.ts b/server/src/services/hire-hook.ts
+index 6b6e22c..e1a7b8b 100644
+--- a/server/src/services/hire-hook.ts
++++ b/server/src/services/hire-hook.ts
+@@ -18,7 +18,7 @@ export interface NotifyHireApprovedInput {
+ }
+ 
+ /**
+- * Invokes the adapter's onHireApproved hook when an agent is approved (join-request or hire_agent approval).
++ * Invokes the adapter's onHireApproved hook when a writer is approved (join-request or onboard_writer greenlight).
+  * Failures are non-fatal: we log and write to activity, never throw.
+  */
+ export async function notifyHireApproved(
+diff --git a/ui/src/components/ActiveAgentsPanel.tsx b/ui/src/components/ActiveAgentsPanel.tsx
+index 2c382a9..cdf99d7 100644
+--- a/ui/src/components/ActiveAgentsPanel.tsx
++++ b/ui/src/components/ActiveAgentsPanel.tsx
+@@ -379,11 +379,11 @@ export function ActiveAgentsPanel({ companyId }: ActiveAgentsPanelProps) {
+   return (
+     <div>
+       <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+-        Agents
++        Writers
+       </h3>
+       {runs.length === 0 ? (
+         <div className="border border-border rounded-lg p-4">
+-          <p className="text-sm text-muted-foreground">No recent agent runs.</p>
++          <p className="text-sm text-muted-foreground">No recent writer runs.</p>
+         </div>
+       ) : (
+         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2 sm:gap-4">
+diff --git a/ui/src/components/ActivityRow.tsx b/ui/src/components/ActivityRow.tsx
+index 3ca8ac0..da90e34 100644
+--- a/ui/src/components/ActivityRow.tsx
++++ b/ui/src/components/ActivityRow.tsx
+@@ -35,8 +35,8 @@ const ACTION_VERBS: Record<string, string> = {
+   "goal.deleted": "deleted",
+   "cost.reported": "reported cost for",
+   "cost.recorded": "recorded cost for",
+-  "company.created": "created company",
+-  "company.updated": "updated company",
++  "company.created": "created production",
++  "company.updated": "updated production",
+   "company.archived": "archived",
+   "company.budget_updated": "updated budget for",
+ };
+diff --git a/ui/src/components/AgentConfigForm.tsx b/ui/src/components/AgentConfigForm.tsx
+index 06cf01d..aaea777 100644
+--- a/ui/src/components/AgentConfigForm.tsx
++++ b/ui/src/components/AgentConfigForm.tsx
+@@ -406,7 +406,7 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
+                 onCommit={(v) => mark("identity", "name", v)}
+                 immediate
+                 className={inputClass}
+-                placeholder="Agent name"
++                placeholder="Writer name"
+               />
+             </Field>
+             <Field label="Title" hint={help.title}>
+diff --git a/ui/src/components/AgentIconPicker.tsx b/ui/src/components/AgentIconPicker.tsx
+index 8f53d87..9e4914d 100644
+--- a/ui/src/components/AgentIconPicker.tsx
++++ b/ui/src/components/AgentIconPicker.tsx
+@@ -41,6 +41,14 @@ import {
+   Hexagon,
+   Pentagon,
+   Fingerprint,
++  PenTool,
++  Scroll,
++  Film,
++  Clapperboard,
++  Drama,
++  Feather,
++  BookOpen,
++  Theater,
+   type LucideIcon,
+ } from "lucide-react";
+ import { AGENT_ICON_NAMES, type AgentIconName } from "@paperclipai/shared";
+@@ -94,6 +102,14 @@ export const AGENT_ICONS: Record<AgentIconName, LucideIcon> = {
+   hexagon: Hexagon,
+   pentagon: Pentagon,
+   fingerprint: Fingerprint,
++  "pen-tool": PenTool,
++  scroll: Scroll,
++  film: Film,
++  clapperboard: Clapperboard,
++  drama: Drama,
++  feather: Feather,
++  "book-open": BookOpen,
++  theater: Theater,
+ };
+ 
+ const DEFAULT_ICON: AgentIconName = "bot";
+diff --git a/ui/src/components/ApprovalCard.tsx b/ui/src/components/ApprovalCard.tsx
+index 2a1e6e8..8776b7c 100644
+--- a/ui/src/components/ApprovalCard.tsx
++++ b/ui/src/components/ApprovalCard.tsx
+@@ -75,7 +75,7 @@ export function ApprovalCard({
+             onClick={onApprove}
+             disabled={isPending}
+           >
+-            Approve
++            Greenlight
+           </Button>
+           <Button
+             variant="destructive"
+diff --git a/ui/src/components/ApprovalPayload.tsx b/ui/src/components/ApprovalPayload.tsx
+index ac7149f..0809e34 100644
+--- a/ui/src/components/ApprovalPayload.tsx
++++ b/ui/src/components/ApprovalPayload.tsx
+@@ -1,8 +1,8 @@
+ import { UserPlus, Lightbulb, ShieldCheck } from "lucide-react";
+ 
+ export const typeLabel: Record<string, string> = {
+-  hire_agent: "Hire Agent",
+-  approve_ceo_strategy: "CEO Strategy",
++  hire_agent: "Onboard Writer",
++  approve_ceo_strategy: "Showrunner Strategy",
+ };
+ 
+ export const typeIcon: Record<string, typeof UserPlus> = {
+diff --git a/ui/src/components/CommandPalette.tsx b/ui/src/components/CommandPalette.tsx
+index 3defb0e..1ebda61 100644
+--- a/ui/src/components/CommandPalette.tsx
++++ b/ui/src/components/CommandPalette.tsx
+@@ -102,7 +102,7 @@ export function CommandPalette() {
+         if (v && isMobile) setSidebarOpen(false);
+       }}>
+       <CommandInput
+-        placeholder="Search issues, agents, projects..."
++        placeholder="Search assignments, writers, episodes..."
+         value={query}
+         onValueChange={setQuery}
+       />
+@@ -117,7 +117,7 @@ export function CommandPalette() {
+             }}
+           >
+             <SquarePen className="mr-2 h-4 w-4" />
+-            Create new issue
++            Create new assignment
+             <span className="ml-auto text-xs text-muted-foreground">C</span>
+           </CommandItem>
+           <CommandItem
+@@ -127,11 +127,11 @@ export function CommandPalette() {
+             }}
+           >
+             <Plus className="mr-2 h-4 w-4" />
+-            Create new agent
++            Create new writer
+           </CommandItem>
+           <CommandItem onSelect={() => go("/projects")}>
+             <Plus className="mr-2 h-4 w-4" />
+-            Create new project
++            Create new episode
+           </CommandItem>
+         </CommandGroup>
+ 
+@@ -148,23 +148,23 @@ export function CommandPalette() {
+           </CommandItem>
+           <CommandItem onSelect={() => go("/issues")}>
+             <CircleDot className="mr-2 h-4 w-4" />
+-            Issues
++            Assignments
+           </CommandItem>
+           <CommandItem onSelect={() => go("/projects")}>
+             <Hexagon className="mr-2 h-4 w-4" />
+-            Projects
++            Episodes
+           </CommandItem>
+           <CommandItem onSelect={() => go("/goals")}>
+             <Target className="mr-2 h-4 w-4" />
+-            Goals
++            Story Arcs
+           </CommandItem>
+           <CommandItem onSelect={() => go("/agents")}>
+             <Bot className="mr-2 h-4 w-4" />
+-            Agents
++            Writers
+           </CommandItem>
+           <CommandItem onSelect={() => go("/costs")}>
+             <DollarSign className="mr-2 h-4 w-4" />
+-            Costs
++            Budget
+           </CommandItem>
+           <CommandItem onSelect={() => go("/activity")}>
+             <History className="mr-2 h-4 w-4" />
+@@ -175,7 +175,7 @@ export function CommandPalette() {
+         {visibleIssues.length > 0 && (
+           <>
+             <CommandSeparator />
+-            <CommandGroup heading="Issues">
++            <CommandGroup heading="Assignments">
+               {visibleIssues.slice(0, 10).map((issue) => (
+                 <CommandItem
+                   key={issue.id}
+@@ -204,7 +204,7 @@ export function CommandPalette() {
+         {agents.length > 0 && (
+           <>
+             <CommandSeparator />
+-            <CommandGroup heading="Agents">
++            <CommandGroup heading="Writers">
+               {agents.slice(0, 10).map((agent) => (
+                 <CommandItem key={agent.id} onSelect={() => go(agentUrl(agent))}>
+                   <Bot className="mr-2 h-4 w-4" />
+@@ -219,7 +219,7 @@ export function CommandPalette() {
+         {projects.length > 0 && (
+           <>
+             <CommandSeparator />
+-            <CommandGroup heading="Projects">
++            <CommandGroup heading="Episodes">
+               {projects.slice(0, 10).map((project) => (
+                 <CommandItem key={project.id} onSelect={() => go(projectUrl(project))}>
+                   <Hexagon className="mr-2 h-4 w-4" />
+diff --git a/ui/src/components/CompanySwitcher.tsx b/ui/src/components/CompanySwitcher.tsx
+index aefe102..f44c0b4 100644
+--- a/ui/src/components/CompanySwitcher.tsx
++++ b/ui/src/components/CompanySwitcher.tsx
+@@ -40,14 +40,14 @@ export function CompanySwitcher() {
+               <span className={`h-2 w-2 rounded-full shrink-0 ${statusDotColor(selectedCompany.status)}`} />
+             )}
+             <span className="text-sm font-medium truncate">
+-              {selectedCompany?.name ?? "Select company"}
++              {selectedCompany?.name ?? "Select production"}
+             </span>
+           </div>
+           <ChevronsUpDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+         </Button>
+       </DropdownMenuTrigger>
+       <DropdownMenuContent align="start" className="w-[220px]">
+-        <DropdownMenuLabel>Companies</DropdownMenuLabel>
++        <DropdownMenuLabel>Productions</DropdownMenuLabel>
+         <DropdownMenuSeparator />
+         {sidebarCompanies.map((company) => (
+           <DropdownMenuItem
+@@ -60,19 +60,19 @@ export function CompanySwitcher() {
+           </DropdownMenuItem>
+         ))}
+         {sidebarCompanies.length === 0 && (
+-          <DropdownMenuItem disabled>No companies</DropdownMenuItem>
++          <DropdownMenuItem disabled>No productions</DropdownMenuItem>
+         )}
+         <DropdownMenuSeparator />
+         <DropdownMenuItem asChild>
+           <Link to="/company/settings" className="no-underline text-inherit">
+             <Settings className="h-4 w-4 mr-2" />
+-            Company Settings
++            Production Settings
+           </Link>
+         </DropdownMenuItem>
+         <DropdownMenuItem asChild>
+           <Link to="/companies" className="no-underline text-inherit">
+             <Plus className="h-4 w-4 mr-2" />
+-            Manage Companies
++            Manage Productions
+           </Link>
+         </DropdownMenuItem>
+       </DropdownMenuContent>
+diff --git a/ui/src/components/GoalProperties.tsx b/ui/src/components/GoalProperties.tsx
+index fdc4da2..809ae10 100644
+--- a/ui/src/components/GoalProperties.tsx
++++ b/ui/src/components/GoalProperties.tsx
+@@ -138,7 +138,7 @@ export function GoalProperties({ goal, onUpdate }: GoalPropertiesProps) {
+         </PropertyRow>
+ 
+         {goal.parentId && (
+-          <PropertyRow label="Parent Goal">
++          <PropertyRow label="Parent Arc">
+             <Link
+               to={`/goals/${goal.parentId}`}
+               className="text-sm hover:underline"
+diff --git a/ui/src/components/GoalTree.tsx b/ui/src/components/GoalTree.tsx
+index 116b166..3034239 100644
+--- a/ui/src/components/GoalTree.tsx
++++ b/ui/src/components/GoalTree.tsx
+@@ -43,7 +43,7 @@ function GoalNode({ goal, children, allGoals, depth, goalLink, onSelect }: GoalN
+       ) : (
+         <span className="w-4" />
+       )}
+-      <span className="text-xs text-muted-foreground capitalize">{goal.level}</span>
++      <span className="text-xs text-muted-foreground capitalize">{{ production: "Production", room: "Room", writer: "Writer", assignment: "Assignment" }[goal.level] ?? goal.level}</span>
+       <span className="flex-1 truncate">{goal.title}</span>
+       <StatusBadge status={goal.status} />
+     </>
+@@ -96,7 +96,7 @@ export function GoalTree({ goals, goalLink, onSelect }: GoalTreeProps) {
+   const roots = goals.filter((g) => !g.parentId || !goalIds.has(g.parentId));
+ 
+   if (goals.length === 0) {
+-    return <p className="text-sm text-muted-foreground">No goals.</p>;
++    return <p className="text-sm text-muted-foreground">No story arcs.</p>;
+   }
+ 
+   return (
+diff --git a/ui/src/components/IssueProperties.tsx b/ui/src/components/IssueProperties.tsx
+index ff7229d..c3335c5 100644
+--- a/ui/src/components/IssueProperties.tsx
++++ b/ui/src/components/IssueProperties.tsx
+@@ -383,7 +383,7 @@ export function IssueProperties({ issue, onUpdate, inline }: IssuePropertiesProp
+   ) : (
+     <>
+       <Hexagon className="h-3.5 w-3.5 text-muted-foreground" />
+-      <span className="text-sm text-muted-foreground">No project</span>
++      <span className="text-sm text-muted-foreground">No episode</span>
+     </>
+   );
+ 
+@@ -391,7 +391,7 @@ export function IssueProperties({ issue, onUpdate, inline }: IssuePropertiesProp
+     <>
+       <input
+         className="w-full px-2 py-1.5 text-xs bg-transparent outline-none border-b border-border mb-1 placeholder:text-muted-foreground/50"
+-        placeholder="Search projects..."
++        placeholder="Search episodes..."
+         value={projectSearch}
+         onChange={(e) => setProjectSearch(e.target.value)}
+         autoFocus={!inline}
+@@ -404,7 +404,7 @@ export function IssueProperties({ issue, onUpdate, inline }: IssuePropertiesProp
+           )}
+           onClick={() => { onUpdate({ projectId: null }); setProjectOpen(false); }}
+         >
+-          No project
++          No episode
+         </button>
+         {orderedProjects
+           .filter((p) => {
+@@ -485,7 +485,7 @@ export function IssueProperties({ issue, onUpdate, inline }: IssuePropertiesProp
+ 
+         <PropertyPicker
+           inline={inline}
+-          label="Project"
++          label="Episode"
+           open={projectOpen}
+           onOpenChange={(open) => { setProjectOpen(open); if (!open) setProjectSearch(""); }}
+           triggerContent={projectTrigger}
+diff --git a/ui/src/components/IssuesList.tsx b/ui/src/components/IssuesList.tsx
+index 6335f02..b95015c 100644
+--- a/ui/src/components/IssuesList.tsx
++++ b/ui/src/components/IssuesList.tsx
+@@ -300,7 +300,7 @@ export function IssuesList({
+         <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+           <Button size="sm" variant="outline" onClick={() => openNewIssue(newIssueDefaults())}>
+             <Plus className="h-4 w-4 sm:mr-1" />
+-            <span className="hidden sm:inline">New Issue</span>
++            <span className="hidden sm:inline">New Assignment</span>
+           </Button>
+           <div className="relative w-48 sm:w-64 md:w-80">
+             <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+@@ -310,9 +310,9 @@ export function IssuesList({
+                 setIssueSearch(e.target.value);
+                 onSearchChange?.(e.target.value);
+               }}
+-              placeholder="Search issues..."
++              placeholder="Search assignments..."
+               className="pl-7 text-xs sm:text-sm"
+-              aria-label="Search issues"
++              aria-label="Search assignments"
+             />
+           </div>
+         </div>
+@@ -559,8 +559,8 @@ export function IssuesList({
+       {!isLoading && filtered.length === 0 && viewState.viewMode === "list" && (
+         <EmptyState
+           icon={CircleDot}
+-          message="No issues match the current filters or search."
+-          action="Create Issue"
++          message="No assignments match the current filters or search."
++          action="Create Assignment"
+           onAction={() => openNewIssue(newIssueDefaults())}
+         />
+       )}
+@@ -688,7 +688,7 @@ export function IssuesList({
+                         >
+                           <input
+                             className="w-full px-2 py-1.5 text-xs bg-transparent outline-none border-b border-border mb-1 placeholder:text-muted-foreground/50"
+-                            placeholder="Search agents..."
++                            placeholder="Search writers..."
+                             value={assigneeSearch}
+                             onChange={(e) => setAssigneeSearch(e.target.value)}
+                             autoFocus
+diff --git a/ui/src/components/MobileBottomNav.tsx b/ui/src/components/MobileBottomNav.tsx
+index e9e5c15..bf24a23 100644
+--- a/ui/src/components/MobileBottomNav.tsx
++++ b/ui/src/components/MobileBottomNav.tsx
+@@ -49,9 +49,9 @@ export function MobileBottomNav({ visible }: MobileBottomNavProps) {
+   const items = useMemo<MobileNavItem[]>(
+     () => [
+       { type: "link", to: "/dashboard", label: "Home", icon: House },
+-      { type: "link", to: "/issues", label: "Issues", icon: CircleDot },
++      { type: "link", to: "/issues", label: "Assignments", icon: CircleDot },
+       { type: "action", label: "Create", icon: SquarePen, onClick: () => openNewIssue() },
+-      { type: "link", to: "/agents/all", label: "Agents", icon: Users },
++      { type: "link", to: "/agents/all", label: "Writers", icon: Users },
+       {
+         type: "link",
+         to: "/inbox",
+diff --git a/ui/src/components/NewAgentDialog.tsx b/ui/src/components/NewAgentDialog.tsx
+index 1883079..12822db 100644
+--- a/ui/src/components/NewAgentDialog.tsx
++++ b/ui/src/components/NewAgentDialog.tsx
+@@ -40,33 +40,33 @@ const ADVANCED_ADAPTER_OPTIONS: Array<{
+     value: "claude_local",
+     label: "Claude Code",
+     icon: Sparkles,
+-    desc: "Local Claude agent",
++    desc: "Local Claude writer",
+     recommended: true,
+   },
+   {
+     value: "codex_local",
+     label: "Codex",
+     icon: Code,
+-    desc: "Local Codex agent",
++    desc: "Local Codex writer",
+     recommended: true,
+   },
+   {
+     value: "opencode_local",
+     label: "OpenCode",
+     icon: OpenCodeLogoIcon,
+-    desc: "Local multi-provider agent",
++    desc: "Local multi-provider writer",
+   },
+   {
+     value: "pi_local",
+     label: "Pi",
+     icon: Terminal,
+-    desc: "Local Pi agent",
++    desc: "Local Pi writer",
+   },
+   {
+     value: "cursor",
+     label: "Cursor",
+     icon: MousePointer2,
+-    desc: "Local Cursor agent",
++    desc: "Local Cursor writer",
+   },
+   {
+     value: "openclaw_gateway",
+@@ -88,14 +88,14 @@ export function NewAgentDialog() {
+     enabled: !!selectedCompanyId && newAgentOpen,
+   });
+ 
+-  const ceoAgent = (agents ?? []).find((a) => a.role === "ceo");
++  const ceoAgent = (agents ?? []).find((a) => a.role === "showrunner");
+ 
+   function handleAskCeo() {
+     closeNewAgent();
+     openNewIssue({
+       assigneeAgentId: ceoAgent?.id,
+-      title: "Create a new agent",
+-      description: "(type in what kind of agent you want here)",
++      title: "Onboard a new writer",
++      description: "(type in what kind of writer you want here)",
+     });
+   }
+ 
+@@ -125,7 +125,7 @@ export function NewAgentDialog() {
+       >
+         {/* Header */}
+         <div className="flex items-center justify-between px-4 py-2.5 border-b border-border">
+-          <span className="text-sm text-muted-foreground">Add a new agent</span>
++          <span className="text-sm text-muted-foreground">Add a new writer</span>
+           <Button
+             variant="ghost"
+             size="icon-xs"
+@@ -148,7 +148,7 @@ export function NewAgentDialog() {
+                   <Sparkles className="h-6 w-6 text-foreground" />
+                 </div>
+                 <p className="text-sm text-muted-foreground">
+-                  We recommend letting your CEO handle agent setup — they know the
++                  We recommend letting your Showrunner handle writer setup — they know the
+                   org structure and can configure reporting, permissions, and
+                   adapters.
+                 </p>
+@@ -156,7 +156,7 @@ export function NewAgentDialog() {
+ 
+               <Button className="w-full" size="lg" onClick={handleAskCeo}>
+                 <Bot className="h-4 w-4 mr-2" />
+-                Ask the CEO to create a new agent
++                Ask the Showrunner to onboard a new writer
+               </Button>
+ 
+               {/* Advanced link */}
+diff --git a/ui/src/components/NewGoalDialog.tsx b/ui/src/components/NewGoalDialog.tsx
+index 0bb9ffc..d7e31b2 100644
+--- a/ui/src/components/NewGoalDialog.tsx
++++ b/ui/src/components/NewGoalDialog.tsx
+@@ -27,10 +27,10 @@ import { MarkdownEditor, type MarkdownEditorRef } from "./MarkdownEditor";
+ import { StatusBadge } from "./StatusBadge";
+ 
+ const levelLabels: Record<string, string> = {
+-  company: "Company",
+-  team: "Team",
+-  agent: "Agent",
+-  task: "Task",
++  company: "Production",
++  team: "Room",
++  agent: "Writer",
++  task: "Assignment",
+ };
+ 
+ export function NewGoalDialog() {
+@@ -128,7 +128,7 @@ export function NewGoalDialog() {
+               </span>
+             )}
+             <span className="text-muted-foreground/60">&rsaquo;</span>
+-            <span>{newGoalDefaults.parentId ? "New sub-goal" : "New goal"}</span>
++            <span>{newGoalDefaults.parentId ? "New sub-story arc" : "New story arc"}</span>
+           </div>
+           <div className="flex items-center gap-1">
+             <Button
+@@ -154,7 +154,7 @@ export function NewGoalDialog() {
+         <div className="px-4 pt-4 pb-2 shrink-0">
+           <input
+             className="w-full text-lg font-semibold bg-transparent outline-none placeholder:text-muted-foreground/50"
+-            placeholder="Goal title"
++            placeholder="Story arc title"
+             value={title}
+             onChange={(e) => setTitle(e.target.value)}
+             onKeyDown={(e) => {
+@@ -237,7 +237,7 @@ export function NewGoalDialog() {
+             <PopoverTrigger asChild>
+               <button className="inline-flex items-center gap-1.5 rounded-md border border-border px-2 py-1 text-xs hover:bg-accent/50 transition-colors">
+                 <Target className="h-3 w-3 text-muted-foreground" />
+-                {currentParent ? currentParent.title : "Parent goal"}
++                {currentParent ? currentParent.title : "Parent story arc"}
+               </button>
+             </PopoverTrigger>
+             <PopoverContent className="w-48 p-1" align="start">
+@@ -273,7 +273,7 @@ export function NewGoalDialog() {
+             disabled={!title.trim() || createGoal.isPending}
+             onClick={handleSubmit}
+           >
+-            {createGoal.isPending ? "Creating…" : newGoalDefaults.parentId ? "Create sub-goal" : "Create goal"}
++            {createGoal.isPending ? "Creating…" : newGoalDefaults.parentId ? "Create sub-story arc" : "Create story arc"}
+           </Button>
+         </div>
+       </DialogContent>
+diff --git a/ui/src/components/NewIssueDialog.tsx b/ui/src/components/NewIssueDialog.tsx
+index 99106f9..c944df1 100644
+--- a/ui/src/components/NewIssueDialog.tsx
++++ b/ui/src/components/NewIssueDialog.tsx
+@@ -474,7 +474,7 @@ export function NewIssueDialog() {
+         ? "Codex options"
+         : assigneeAdapterType === "opencode_local"
+           ? "OpenCode options"
+-        : "Agent options";
++        : "Writer options";
+   const thinkingEffortOptions =
+     assigneeAdapterType === "codex_local"
+       ? ISSUE_THINKING_EFFORT_OPTIONS.codex_local
+@@ -609,7 +609,7 @@ export function NewIssueDialog() {
+               </PopoverContent>
+             </Popover>
+             <span className="text-muted-foreground/60">&rsaquo;</span>
+-            <span>New issue</span>
++            <span>New assignment</span>
+           </div>
+           <div className="flex items-center gap-1">
+             <Button
+@@ -635,7 +635,7 @@ export function NewIssueDialog() {
+         <div className="px-4 pt-4 pb-2 shrink-0">
+           <textarea
+             className="w-full text-lg font-semibold bg-transparent outline-none resize-none overflow-hidden placeholder:text-muted-foreground/50"
+-            placeholder="Issue title"
++            placeholder="Assignment title"
+             rows={1}
+             value={title}
+             onChange={(e) => {
+@@ -702,9 +702,9 @@ export function NewIssueDialog() {
+                 options={projectOptions}
+                 placeholder="Project"
+                 disablePortal
+-                noneLabel="No project"
+-                searchPlaceholder="Search projects..."
+-                emptyMessage="No projects found."
++                noneLabel="No episode"
++                searchPlaceholder="Search episodes..."
++                emptyMessage="No episodes found."
+                 onChange={setProjectId}
+                 onConfirm={() => {
+                   descriptionEditorRef.current?.focus();
+@@ -719,7 +719,7 @@ export function NewIssueDialog() {
+                       <span className="truncate">{option.label}</span>
+                     </>
+                   ) : (
+-                    <span className="text-muted-foreground">Project</span>
++                    <span className="text-muted-foreground">Episode</span>
+                   )
+                 }
+                 renderOption={(option) => {
+@@ -959,7 +959,7 @@ export function NewIssueDialog() {
+             disabled={!title.trim() || createIssue.isPending}
+             onClick={handleSubmit}
+           >
+-            {createIssue.isPending ? "Creating..." : "Create Issue"}
++            {createIssue.isPending ? "Creating..." : "Create Assignment"}
+           </Button>
+         </div>
+       </DialogContent>
+diff --git a/ui/src/components/NewProjectDialog.tsx b/ui/src/components/NewProjectDialog.tsx
+index 08fda5c..413548f 100644
+--- a/ui/src/components/NewProjectDialog.tsx
++++ b/ui/src/components/NewProjectDialog.tsx
+@@ -226,7 +226,7 @@ export function NewProjectDialog() {
+               </span>
+             )}
+             <span className="text-muted-foreground/60">&rsaquo;</span>
+-            <span>New project</span>
++            <span>New episode</span>
+           </div>
+           <div className="flex items-center gap-1">
+             <Button
+@@ -252,7 +252,7 @@ export function NewProjectDialog() {
+         <div className="px-4 pt-4 pb-2 shrink-0">
+           <input
+             className="w-full text-lg font-semibold bg-transparent outline-none placeholder:text-muted-foreground/50"
+-            placeholder="Project name"
++            placeholder="Episode name"
+             value={name}
+             onChange={(e) => setName(e.target.value)}
+             onKeyDown={(e) => {
+@@ -283,7 +283,7 @@ export function NewProjectDialog() {
+ 
+         <div className="px-4 pb-3 space-y-3 border-t border-border">
+           <div className="pt-3">
+-            <p className="text-sm font-medium">Where will work be done on this project?</p>
++            <p className="text-sm font-medium">Where will work be done on this episode?</p>
+             <p className="text-xs text-muted-foreground">Add local folder and/or GitHub repo workspace hints.</p>
+           </div>
+           <div className="grid gap-2 sm:grid-cols-3">
+@@ -411,7 +411,7 @@ export function NewProjectDialog() {
+                 disabled={selectedGoals.length > 0 && availableGoals.length === 0}
+               >
+                 {selectedGoals.length > 0 ? <Plus className="h-3 w-3 text-muted-foreground" /> : <Target className="h-3 w-3 text-muted-foreground" />}
+-                {selectedGoals.length > 0 ? "+ Goal" : "Goal"}
++                {selectedGoals.length > 0 ? "+ Story Arc" : "Story Arc"}
+               </button>
+             </PopoverTrigger>
+             <PopoverContent className="w-56 p-1" align="start">
+@@ -420,7 +420,7 @@ export function NewProjectDialog() {
+                   className="flex items-center gap-2 w-full px-2 py-1.5 text-xs rounded hover:bg-accent/50 text-muted-foreground"
+                   onClick={() => setGoalOpen(false)}
+                 >
+-                  No goal
++                  No story arc
+                 </button>
+               )}
+               {availableGoals.map((g) => (
+@@ -437,7 +437,7 @@ export function NewProjectDialog() {
+               ))}
+               {selectedGoals.length > 0 && availableGoals.length === 0 && (
+                 <div className="px-2 py-1.5 text-xs text-muted-foreground">
+-                  All goals already selected.
++                  All story arcs already selected.
+                 </div>
+               )}
+             </PopoverContent>
+@@ -459,7 +459,7 @@ export function NewProjectDialog() {
+         {/* Footer */}
+         <div className="flex items-center justify-between px-4 py-2.5 border-t border-border">
+           {createProject.isError ? (
+-            <p className="text-xs text-destructive">Failed to create project.</p>
++            <p className="text-xs text-destructive">Failed to create episode.</p>
+           ) : (
+             <span />
+           )}
+@@ -468,7 +468,7 @@ export function NewProjectDialog() {
+             disabled={!name.trim() || createProject.isPending}
+             onClick={handleSubmit}
+           >
+-            {createProject.isPending ? "Creating…" : "Create project"}
++            {createProject.isPending ? "Creating…" : "Create episode"}
+           </Button>
+         </div>
+       </DialogContent>
+diff --git a/ui/src/components/OnboardingWizard.tsx b/ui/src/components/OnboardingWizard.tsx
+index fbcbc7b..f870dce 100644
+--- a/ui/src/components/OnboardingWizard.tsx
++++ b/ui/src/components/OnboardingWizard.tsx
+@@ -58,11 +58,11 @@ type AdapterType =
+   | "http"
+   | "openclaw_gateway";
+ 
+-const DEFAULT_TASK_DESCRIPTION = `Setup yourself as the CEO. Use the ceo persona found here: [https://github.com/paperclipai/companies/blob/main/default/ceo/AGENTS.md](https://github.com/paperclipai/companies/blob/main/default/ceo/AGENTS.md)
++const DEFAULT_TASK_DESCRIPTION = `Setup yourself as the Showrunner. Use the showrunner persona found here: [https://github.com/paperclipai/companies/blob/main/default/ceo/AGENTS.md](https://github.com/paperclipai/companies/blob/main/default/ceo/AGENTS.md)
+ 
+-Ensure you have a folder agents/ceo and then download this AGENTS.md as well as the sibling HEARTBEAT.md, SOUL.md, and TOOLS.md. and set that AGENTS.md as the path to your agents instruction file
++Ensure you have a folder agents/showrunner and then download this AGENTS.md as well as the sibling HEARTBEAT.md, SOUL.md, and TOOLS.md. and set that AGENTS.md as the path to your agents instruction file
+ 
+-And after you've finished that, hire yourself a Founding Engineer agent`;
++And after you've finished that, bring in your first Staff Writer`;
+ 
+ export function OnboardingWizard() {
+   const { onboardingOpen, onboardingOptions, closeOnboarding } = useDialog();
+@@ -84,7 +84,7 @@ export function OnboardingWizard() {
+   const [companyGoal, setCompanyGoal] = useState("");
+ 
+   // Step 2
+-  const [agentName, setAgentName] = useState("CEO");
++  const [agentName, setAgentName] = useState("Showrunner");
+   const [adapterType, setAdapterType] = useState<AdapterType>("claude_local");
+   const [cwd, setCwd] = useState("");
+   const [model, setModel] = useState("");
+@@ -100,7 +100,7 @@ export function OnboardingWizard() {
+   const [unsetAnthropicLoading, setUnsetAnthropicLoading] = useState(false);
+ 
+   // Step 3
+-  const [taskTitle, setTaskTitle] = useState("Create your CEO HEARTBEAT.md");
++  const [taskTitle, setTaskTitle] = useState("Create your Showrunner HEARTBEAT.md");
+   const [taskDescription, setTaskDescription] = useState(
+     DEFAULT_TASK_DESCRIPTION
+   );
+@@ -234,7 +234,7 @@ export function OnboardingWizard() {
+     setError(null);
+     setCompanyName("");
+     setCompanyGoal("");
+-    setAgentName("CEO");
++    setAgentName("Showrunner");
+     setAdapterType("claude_local");
+     setCwd("");
+     setModel("");
+@@ -246,7 +246,7 @@ export function OnboardingWizard() {
+     setAdapterEnvLoading(false);
+     setForceUnsetAnthropicApiKey(false);
+     setUnsetAnthropicLoading(false);
+-    setTaskTitle("Create your CEO HEARTBEAT.md");
++    setTaskTitle("Create your Showrunner HEARTBEAT.md");
+     setTaskDescription(DEFAULT_TASK_DESCRIPTION);
+     setCreatedCompanyId(null);
+     setCreatedCompanyPrefix(null);
+@@ -298,7 +298,7 @@ export function OnboardingWizard() {
+   ): Promise<AdapterEnvironmentTestResult | null> {
+     if (!createdCompanyId) {
+       setAdapterEnvError(
+-        "Create or select a company before testing adapter environment."
++        "Create or select a production before testing adapter environment."
+       );
+       return null;
+     }
+@@ -347,7 +347,7 @@ export function OnboardingWizard() {
+ 
+       setStep(2);
+     } catch (err) {
+-      setError(err instanceof Error ? err.message : "Failed to create company");
++      setError(err instanceof Error ? err.message : "Failed to create production");
+     } finally {
+       setLoading(false);
+     }
+@@ -394,7 +394,7 @@ export function OnboardingWizard() {
+ 
+       const agent = await agentsApi.create(createdCompanyId, {
+         name: agentName.trim(),
+-        role: "ceo",
++        role: "showrunner",
+         adapterType,
+         adapterConfig: buildAdapterConfig(),
+         runtimeConfig: {
+@@ -413,7 +413,7 @@ export function OnboardingWizard() {
+       });
+       setStep(3);
+     } catch (err) {
+-      setError(err instanceof Error ? err.message : "Failed to create agent");
++      setError(err instanceof Error ? err.message : "Failed to create writer");
+     } finally {
+       setLoading(false);
+     }
+@@ -580,19 +580,19 @@ export function OnboardingWizard() {
+                       <Building2 className="h-5 w-5 text-muted-foreground" />
+                     </div>
+                     <div>
+-                      <h3 className="font-medium">Name your company</h3>
++                      <h3 className="font-medium">Name your production</h3>
+                       <p className="text-xs text-muted-foreground">
+-                        This is the organization your agents will work for.
++                        This is the production your writers will work on.
+                       </p>
+                     </div>
+                   </div>
+                   <div>
+                     <label className="text-xs text-muted-foreground mb-1 block">
+-                      Company name
++                      Production name
+                     </label>
+                     <input
+                       className="w-full rounded-md border border-border bg-transparent px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground/50"
+-                      placeholder="Acme Corp"
++                      placeholder="Season 3: The Return"
+                       value={companyName}
+                       onChange={(e) => setCompanyName(e.target.value)}
+                       autoFocus
+@@ -600,11 +600,11 @@ export function OnboardingWizard() {
+                   </div>
+                   <div>
+                     <label className="text-xs text-muted-foreground mb-1 block">
+-                      Mission / goal (optional)
++                      Creative vision (optional)
+                     </label>
+                     <textarea
+                       className="w-full rounded-md border border-border bg-transparent px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground/50 resize-none min-h-[60px]"
+-                      placeholder="What is this company trying to achieve?"
++                      placeholder="What story are you telling?"
+                       value={companyGoal}
+                       onChange={(e) => setCompanyGoal(e.target.value)}
+                     />
+@@ -619,19 +619,19 @@ export function OnboardingWizard() {
+                       <Bot className="h-5 w-5 text-muted-foreground" />
+                     </div>
+                     <div>
+-                      <h3 className="font-medium">Create your first agent</h3>
++                      <h3 className="font-medium">Bring in your first writer</h3>
+                       <p className="text-xs text-muted-foreground">
+-                        Choose how this agent will run tasks.
++                        Choose how this writer will handle assignments.
+                       </p>
+                     </div>
+                   </div>
+                   <div>
+                     <label className="text-xs text-muted-foreground mb-1 block">
+-                      Agent name
++                      Writer name
+                     </label>
+                     <input
+                       className="w-full rounded-md border border-border bg-transparent px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground/50"
+-                      placeholder="CEO"
++                      placeholder="Showrunner"
+                       value={agentName}
+                       onChange={(e) => setAgentName(e.target.value)}
+                       autoFocus
+@@ -887,7 +887,7 @@ export function OnboardingWizard() {
+                         <div className="rounded-md border border-amber-300/60 bg-amber-50/40 px-2.5 py-2 space-y-2">
+                           <p className="text-[11px] text-amber-900/90 leading-relaxed">
+                             Claude failed while <span className="font-mono">ANTHROPIC_API_KEY</span> is set.
+-                            You can clear it in this CEO adapter config and retry the probe.
++                            You can clear it in this Showrunner adapter config and retry the probe.
+                           </p>
+                           <Button
+                             size="sm"
+@@ -993,20 +993,20 @@ export function OnboardingWizard() {
+                       <ListTodo className="h-5 w-5 text-muted-foreground" />
+                     </div>
+                     <div>
+-                      <h3 className="font-medium">Give it something to do</h3>
++                      <h3 className="font-medium">Give them an assignment</h3>
+                       <p className="text-xs text-muted-foreground">
+-                        Give your agent a small task to start with — a bug fix,
+-                        a research question, writing a script.
++                        Give your writer a first assignment — a scene draft,
++                        character study, or story outline.
+                       </p>
+                     </div>
+                   </div>
+                   <div>
+                     <label className="text-xs text-muted-foreground mb-1 block">
+-                      Task title
++                      Assignment title
+                     </label>
+                     <input
+                       className="w-full rounded-md border border-border bg-transparent px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground/50"
+-                      placeholder="e.g. Research competitor pricing"
++                      placeholder="e.g. Draft the cold open for Episode 1"
+                       value={taskTitle}
+                       onChange={(e) => setTaskTitle(e.target.value)}
+                       autoFocus
+@@ -1019,7 +1019,7 @@ export function OnboardingWizard() {
+                     <textarea
+                       ref={textareaRef}
+                       className="w-full rounded-md border border-border bg-transparent px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground/50 resize-none min-h-[120px] max-h-[300px] overflow-y-auto"
+-                      placeholder="Add more detail about what the agent should do..."
++                      placeholder="Add more detail about what the writer should work on..."
+                       value={taskDescription}
+                       onChange={(e) => setTaskDescription(e.target.value)}
+                     />
+@@ -1036,8 +1036,8 @@ export function OnboardingWizard() {
+                     <div>
+                       <h3 className="font-medium">Ready to launch</h3>
+                       <p className="text-xs text-muted-foreground">
+-                        Everything is set up. Your assigned task already woke
+-                        the agent, so you can jump straight to the issue.
++                        Everything is set up. Your assignment already woke
++                        the writer, so you can jump straight to it.
+                       </p>
+                     </div>
+                   </div>
+@@ -1048,7 +1048,7 @@ export function OnboardingWizard() {
+                         <p className="text-sm font-medium truncate">
+                           {companyName}
+                         </p>
+-                        <p className="text-xs text-muted-foreground">Company</p>
++                        <p className="text-xs text-muted-foreground">Production</p>
+                       </div>
+                       <Check className="h-4 w-4 text-green-500 shrink-0" />
+                     </div>
+@@ -1070,7 +1070,7 @@ export function OnboardingWizard() {
+                         <p className="text-sm font-medium truncate">
+                           {taskTitle}
+                         </p>
+-                        <p className="text-xs text-muted-foreground">Task</p>
++                        <p className="text-xs text-muted-foreground">Assignment</p>
+                       </div>
+                       <Check className="h-4 w-4 text-green-500 shrink-0" />
+                     </div>
+diff --git a/ui/src/components/ProjectProperties.tsx b/ui/src/components/ProjectProperties.tsx
+index ea95968..ada2f36 100644
+--- a/ui/src/components/ProjectProperties.tsx
++++ b/ui/src/components/ProjectProperties.tsx
+@@ -273,7 +273,7 @@ export function ProjectProperties({ project, onUpdate }: ProjectPropertiesProps)
+         )}
+         <div className="py-1.5">
+           <div className="flex items-start justify-between gap-2">
+-            <span className="text-xs text-muted-foreground">Goals</span>
++            <span className="text-xs text-muted-foreground">Story Arcs</span>
+             <div className="flex flex-col items-end gap-1.5">
+               {linkedGoals.length === 0 ? (
+                 <span className="text-sm text-muted-foreground">None</span>
+@@ -311,13 +311,13 @@ export function ProjectProperties({ project, onUpdate }: ProjectPropertiesProps)
+                       disabled={availableGoals.length === 0}
+                     >
+                       <Plus className="h-3 w-3 mr-1" />
+-                      Goal
++                      Story Arc
+                     </Button>
+                   </PopoverTrigger>
+                   <PopoverContent className="w-56 p-1" align="end">
+                     {availableGoals.length === 0 ? (
+                       <div className="px-2 py-1.5 text-xs text-muted-foreground">
+-                        All goals linked.
++                        All story arcs linked.
+                       </div>
+                     ) : (
+                       availableGoals.map((goal) => (
+@@ -360,7 +360,7 @@ export function ProjectProperties({ project, onUpdate }: ProjectPropertiesProps)
+                 </button>
+               </TooltipTrigger>
+               <TooltipContent side="top">
+-                Workspaces give your agents hints about where the work is
++                Workspaces give your writers hints about where the work is
+               </TooltipContent>
+             </Tooltip>
+           </div>
+diff --git a/ui/src/components/Sidebar.tsx b/ui/src/components/Sidebar.tsx
+index ae5e83d..1d56bf6 100644
+--- a/ui/src/components/Sidebar.tsx
++++ b/ui/src/components/Sidebar.tsx
+@@ -73,7 +73,7 @@ export function Sidebar() {
+             className="flex items-center gap-2.5 px-3 py-2 text-[13px] font-medium text-muted-foreground hover:bg-accent/50 hover:text-foreground transition-colors"
+           >
+             <SquarePen className="h-4 w-4 shrink-0" />
+-            <span className="truncate">New Issue</span>
++            <span className="truncate">New Assignment</span>
+           </button>
+           <SidebarNavItem to="/dashboard" label="Dashboard" icon={LayoutDashboard} liveCount={liveRunCount} />
+           <SidebarNavItem
+@@ -87,17 +87,17 @@ export function Sidebar() {
+         </div>
+ 
+         <SidebarSection label="Work">
+-          <SidebarNavItem to="/issues" label="Issues" icon={CircleDot} />
+-          <SidebarNavItem to="/goals" label="Goals" icon={Target} />
++          <SidebarNavItem to="/issues" label="Assignments" icon={CircleDot} />
++          <SidebarNavItem to="/goals" label="Story Arcs" icon={Target} />
+         </SidebarSection>
+ 
+         <SidebarProjects />
+ 
+         <SidebarAgents />
+ 
+-        <SidebarSection label="Company">
+-          <SidebarNavItem to="/org" label="Org" icon={Network} />
+-          <SidebarNavItem to="/costs" label="Costs" icon={DollarSign} />
++        <SidebarSection label="Production">
++          <SidebarNavItem to="/org" label="Room" icon={Network} />
++          <SidebarNavItem to="/costs" label="Budget" icon={DollarSign} />
+           <SidebarNavItem to="/activity" label="Activity" icon={History} />
+           <SidebarNavItem to="/company/settings" label="Settings" icon={Settings} />
+         </SidebarSection>
+diff --git a/ui/src/components/SidebarAgents.tsx b/ui/src/components/SidebarAgents.tsx
+index 9d36377..bf43bbb 100644
+--- a/ui/src/components/SidebarAgents.tsx
++++ b/ui/src/components/SidebarAgents.tsx
+@@ -88,7 +88,7 @@ export function SidebarAgents() {
+               )}
+             />
+             <span className="text-[10px] font-medium uppercase tracking-widest font-mono text-muted-foreground/60">
+-              Agents
++              Writers
+             </span>
+           </CollapsibleTrigger>
+           <button
+@@ -97,7 +97,7 @@ export function SidebarAgents() {
+               openNewAgent();
+             }}
+             className="flex items-center justify-center h-4 w-4 rounded text-muted-foreground/60 hover:text-foreground hover:bg-accent/50 transition-colors"
+-            aria-label="New agent"
++            aria-label="New writer"
+           >
+             <Plus className="h-3 w-3" />
+           </button>
+diff --git a/ui/src/components/SidebarProjects.tsx b/ui/src/components/SidebarProjects.tsx
+index 17fc110..846e16a 100644
+--- a/ui/src/components/SidebarProjects.tsx
++++ b/ui/src/components/SidebarProjects.tsx
+@@ -147,7 +147,7 @@ export function SidebarProjects() {
+               )}
+             />
+             <span className="text-[10px] font-medium uppercase tracking-widest font-mono text-muted-foreground/60">
+-              Projects
++              Episodes
+             </span>
+           </CollapsibleTrigger>
+           <button
+@@ -156,7 +156,7 @@ export function SidebarProjects() {
+               openNewProject();
+             }}
+             className="flex items-center justify-center h-4 w-4 rounded text-muted-foreground/60 hover:text-foreground hover:bg-accent/50 transition-colors"
+-            aria-label="New project"
++            aria-label="New episode"
+           >
+             <Plus className="h-3 w-3" />
+           </button>
+diff --git a/ui/src/pages/Activity.tsx b/ui/src/pages/Activity.tsx
+index cfb347b..3f000c3 100644
+--- a/ui/src/pages/Activity.tsx
++++ b/ui/src/pages/Activity.tsx
+@@ -82,7 +82,7 @@ export function Activity() {
+   }, [issues]);
+ 
+   if (!selectedCompanyId) {
+-    return <EmptyState icon={History} message="Select a company to view activity." />;
++    return <EmptyState icon={History} message="Select a production to view activity." />;
+   }
+ 
+   if (isLoading) {
+diff --git a/ui/src/pages/AgentDetail.tsx b/ui/src/pages/AgentDetail.tsx
+index 06c3a2f..bcfadba 100644
+--- a/ui/src/pages/AgentDetail.tsx
++++ b/ui/src/pages/AgentDetail.tsx
+@@ -393,9 +393,9 @@ export function AgentDetail() {
+ 
+   useEffect(() => {
+     const crumbs: { label: string; href?: string }[] = [
+-      { label: "Agents", href: "/agents" },
++      { label: "Writers", href: "/agents" },
+     ];
+-    const agentName = agent?.name ?? routeAgentRef ?? "Agent";
++    const agentName = agent?.name ?? routeAgentRef ?? "Writer";
+     if (activeView === "overview" && !urlRunId) {
+       crumbs.push({ label: agentName });
+     } else {
+@@ -773,10 +773,10 @@ function AgentOverview({
+         <ChartCard title="Run Activity" subtitle="Last 14 days">
+           <RunActivityChart runs={runs} />
+         </ChartCard>
+-        <ChartCard title="Issues by Priority" subtitle="Last 14 days">
++        <ChartCard title="Assignments by Priority" subtitle="Last 14 days">
+           <PriorityChart issues={assignedIssues} />
+         </ChartCard>
+-        <ChartCard title="Issues by Status" subtitle="Last 14 days">
++        <ChartCard title="Assignments by Status" subtitle="Last 14 days">
+           <IssueStatusChart issues={assignedIssues} />
+         </ChartCard>
+         <ChartCard title="Success Rate" subtitle="Last 14 days">
+diff --git a/ui/src/pages/Agents.tsx b/ui/src/pages/Agents.tsx
+index 5c00444..6a35e59 100644
+--- a/ui/src/pages/Agents.tsx
++++ b/ui/src/pages/Agents.tsx
+@@ -113,11 +113,11 @@ export function Agents() {
+   }, [agents]);
+ 
+   useEffect(() => {
+-    setBreadcrumbs([{ label: "Agents" }]);
++    setBreadcrumbs([{ label: "Writers" }]);
+   }, [setBreadcrumbs]);
+ 
+   if (!selectedCompanyId) {
+-    return <EmptyState icon={Bot} message="Select a company to view agents." />;
++    return <EmptyState icon={Bot} message="Select a production to view writers." />;
+   }
+ 
+   if (isLoading) {
+@@ -198,13 +198,13 @@ export function Agents() {
+           )}
+           <Button size="sm" variant="outline" onClick={openNewAgent}>
+             <Plus className="h-3.5 w-3.5 mr-1.5" />
+-            New Agent
++            New Writer
+           </Button>
+         </div>
+       </div>
+ 
+       {filtered.length > 0 && (
+-        <p className="text-xs text-muted-foreground">{filtered.length} agent{filtered.length !== 1 ? "s" : ""}</p>
++        <p className="text-xs text-muted-foreground">{filtered.length} writer{filtered.length !== 1 ? "s" : ""}</p>
+       )}
+ 
+       {error && <p className="text-sm text-destructive">{error.message}</p>}
+@@ -212,8 +212,8 @@ export function Agents() {
+       {agents && agents.length === 0 && (
+         <EmptyState
+           icon={Bot}
+-          message="Create your first agent to get started."
+-          action="New Agent"
++          message="Bring in your first writer to get started."
++          action="New Writer"
+           onAction={openNewAgent}
+         />
+       )}
+@@ -276,7 +276,7 @@ export function Agents() {
+ 
+       {effectiveView === "list" && agents && agents.length > 0 && filtered.length === 0 && (
+         <p className="text-sm text-muted-foreground text-center py-8">
+-          No agents match the selected filter.
++          No writers match the selected filter.
+         </p>
+       )}
+ 
+@@ -291,13 +291,13 @@ export function Agents() {
+ 
+       {effectiveView === "org" && orgTree && orgTree.length > 0 && filteredOrg.length === 0 && (
+         <p className="text-sm text-muted-foreground text-center py-8">
+-          No agents match the selected filter.
++          No writers match the selected filter.
+         </p>
+       )}
+ 
+       {effectiveView === "org" && orgTree && orgTree.length === 0 && (
+         <p className="text-sm text-muted-foreground text-center py-8">
+-          No organizational hierarchy defined.
++          No room hierarchy defined.
+         </p>
+       )}
+     </div>
+diff --git a/ui/src/pages/ApprovalDetail.tsx b/ui/src/pages/ApprovalDetail.tsx
+index 9c962c0..1714003 100644
+--- a/ui/src/pages/ApprovalDetail.tsx
++++ b/ui/src/pages/ApprovalDetail.tsx
+@@ -65,8 +65,8 @@ export function ApprovalDetail() {
+ 
+   useEffect(() => {
+     setBreadcrumbs([
+-      { label: "Approvals", href: "/approvals" },
+-      { label: approval?.id?.slice(0, 8) ?? approvalId ?? "Approval" },
++      { label: "Greenlights", href: "/approvals" },
++      { label: approval?.id?.slice(0, 8) ?? approvalId ?? "Greenlight" },
+     ]);
+   }, [setBreadcrumbs, approval, approvalId]);
+ 
+@@ -155,17 +155,17 @@ export function ApprovalDetail() {
+       ? {
+           label:
+             (linkedIssues?.length ?? 0) > 1
+-              ? "Review linked issues"
+-              : "Review linked issue",
++              ? "Review linked assignments"
++              : "Review linked assignment",
+           to: `/issues/${primaryLinkedIssue.identifier ?? primaryLinkedIssue.id}`,
+         }
+       : linkedAgentId
+         ? {
+-            label: "Open hired agent",
++            label: "Open onboarded writer",
+             to: `/agents/${linkedAgentId}`,
+           }
+         : {
+-            label: "Back to approvals",
++            label: "Back to greenlights",
+             to: "/approvals",
+           };
+ 
+@@ -300,7 +300,7 @@ export function ApprovalDetail() {
+               Mark resubmitted
+             </Button>
+           )}
+-          {approval.status === "rejected" && approval.type === "hire_agent" && linkedAgentId && (
++          {approval.status === "rejected" && approval.type === "onboard_writer" && linkedAgentId && (
+             <Button
+               size="sm"
+               variant="outline"
+diff --git a/ui/src/pages/Approvals.tsx b/ui/src/pages/Approvals.tsx
+index 24c8da0..0b01990 100644
+--- a/ui/src/pages/Approvals.tsx
++++ b/ui/src/pages/Approvals.tsx
+@@ -26,7 +26,7 @@ export function Approvals() {
+   const [actionError, setActionError] = useState<string | null>(null);
+ 
+   useEffect(() => {
+-    setBreadcrumbs([{ label: "Approvals" }]);
++    setBreadcrumbs([{ label: "Greenlights" }]);
+   }, [setBreadcrumbs]);
+ 
+   const { data, isLoading, error } = useQuery({
+@@ -75,7 +75,7 @@ export function Approvals() {
+   ).length;
+ 
+   if (!selectedCompanyId) {
+-    return <p className="text-sm text-muted-foreground">Select a company first.</p>;
++    return <p className="text-sm text-muted-foreground">Select a production first.</p>;
+   }
+ 
+   if (isLoading) {
+@@ -107,7 +107,7 @@ export function Approvals() {
+         <div className="flex flex-col items-center justify-center py-16 text-center">
+           <ShieldCheck className="h-8 w-8 text-muted-foreground/30 mb-3" />
+           <p className="text-sm text-muted-foreground">
+-            {statusFilter === "pending" ? "No pending approvals." : "No approvals yet."}
++            {statusFilter === "pending" ? "No pending greenlights." : "No greenlights yet."}
+           </p>
+         </div>
+       )}
+diff --git a/ui/src/pages/Companies.tsx b/ui/src/pages/Companies.tsx
+index e00c25d..d7fa181 100644
+--- a/ui/src/pages/Companies.tsx
++++ b/ui/src/pages/Companies.tsx
+@@ -69,7 +69,7 @@ export function Companies() {
+   });
+ 
+   useEffect(() => {
+-    setBreadcrumbs([{ label: "Companies" }]);
++    setBreadcrumbs([{ label: "Productions" }]);
+   }, [setBreadcrumbs]);
+ 
+   function startEdit(companyId: string, currentName: string) {
+@@ -92,12 +92,12 @@ export function Companies() {
+       <div className="flex items-center justify-end">
+         <Button size="sm" onClick={() => openOnboarding()}>
+           <Plus className="h-3.5 w-3.5 mr-1.5" />
+-          New Company
++          New Production
+         </Button>
+       </div>
+ 
+       <div className="h-6">
+-        {loading && <p className="text-sm text-muted-foreground">Loading companies...</p>}
++        {loading && <p className="text-sm text-muted-foreground">Loading productions...</p>}
+         {error && <p className="text-sm text-destructive">{error.message}</p>}
+       </div>
+ 
+@@ -223,7 +223,7 @@ export function Companies() {
+                         onClick={() => setConfirmDeleteId(company.id)}
+                       >
+                         <Trash2 className="h-3.5 w-3.5" />
+-                        Delete Company
++                        Delete Production
+                       </DropdownMenuItem>
+                     </DropdownMenuContent>
+                   </DropdownMenu>
+@@ -235,13 +235,13 @@ export function Companies() {
+                 <div className="flex items-center gap-1.5">
+                   <Users className="h-3.5 w-3.5" />
+                   <span>
+-                    {agentCount} {agentCount === 1 ? "agent" : "agents"}
++                    {agentCount} {agentCount === 1 ? "writer" : "writers"}
+                   </span>
+                 </div>
+                 <div className="flex items-center gap-1.5">
+                   <CircleDot className="h-3.5 w-3.5" />
+                   <span>
+-                    {issueCount} {issueCount === 1 ? "issue" : "issues"}
++                    {issueCount} {issueCount === 1 ? "assignment" : "assignments"}
+                   </span>
+                 </div>
+                 <div className="flex items-center gap-1.5">
+@@ -266,7 +266,7 @@ export function Companies() {
+                   onClick={(e) => e.stopPropagation()}
+                 >
+                   <p className="text-sm text-destructive font-medium">
+-                    Delete this company and all its data? This cannot be undone.
++                    Delete this production and all its data? This cannot be undone.
+                   </p>
+                   <div className="flex items-center gap-2 ml-4 shrink-0">
+                     <Button
+diff --git a/ui/src/pages/CompanySettings.tsx b/ui/src/pages/CompanySettings.tsx
+index 95ba1d7..32b7ad1 100644
+--- a/ui/src/pages/CompanySettings.tsx
++++ b/ui/src/pages/CompanySettings.tsx
+@@ -157,7 +157,7 @@ export function CompanySettings() {
+ 
+   useEffect(() => {
+     setBreadcrumbs([
+-      { label: selectedCompany?.name ?? "Company", href: "/dashboard" },
++      { label: selectedCompany?.name ?? "Production", href: "/dashboard" },
+       { label: "Settings" }
+     ]);
+   }, [setBreadcrumbs, selectedCompany?.name]);
+@@ -165,7 +165,7 @@ export function CompanySettings() {
+   if (!selectedCompany) {
+     return (
+       <div className="text-sm text-muted-foreground">
+-        No company selected. Select a company from the switcher above.
++        No production selected. Select a production from the switcher above.
+       </div>
+     );
+   }
+@@ -182,7 +182,7 @@ export function CompanySettings() {
+     <div className="max-w-2xl space-y-6">
+       <div className="flex items-center gap-2">
+         <Settings className="h-5 w-5 text-muted-foreground" />
+-        <h1 className="text-lg font-semibold">Company Settings</h1>
++        <h1 className="text-lg font-semibold">Production Settings</h1>
+       </div>
+ 
+       {/* General */}
+@@ -191,7 +191,7 @@ export function CompanySettings() {
+           General
+         </div>
+         <div className="space-y-3 rounded-md border border-border px-4 py-4">
+-          <Field label="Company name" hint="The display name for your company.">
++          <Field label="Production name" hint="The display name for your production.">
+             <input
+               className="w-full rounded-md border border-border bg-transparent px-2.5 py-1.5 text-sm outline-none"
+               type="text"
+@@ -201,13 +201,13 @@ export function CompanySettings() {
+           </Field>
+           <Field
+             label="Description"
+-            hint="Optional description shown in the company profile."
++            hint="Optional description shown in the production profile."
+           >
+             <input
+               className="w-full rounded-md border border-border bg-transparent px-2.5 py-1.5 text-sm outline-none"
+               type="text"
+               value={description}
+-              placeholder="Optional company description"
++              placeholder="Optional production description"
+               onChange={(e) => setDescription(e.target.value)}
+             />
+           </Field>
+@@ -231,7 +231,7 @@ export function CompanySettings() {
+             <div className="flex-1 space-y-2">
+               <Field
+                 label="Brand color"
+-                hint="Sets the hue for the company icon. Leave empty for auto-generated color."
++                hint="Sets the hue for the production icon. Leave empty for auto-generated color."
+               >
+                 <div className="flex items-center gap-2">
+                   <input
+@@ -295,12 +295,12 @@ export function CompanySettings() {
+       {/* Hiring */}
+       <div className="space-y-4">
+         <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+-          Hiring
++          Onboarding
+         </div>
+         <div className="rounded-md border border-border px-4 py-3">
+           <ToggleField
+-            label="Require board approval for new hires"
+-            hint="New agent hires stay pending until approved by board."
++            label="Require executive producer greenlight for new writers"
++            hint="New writers stay pending until greenlighted by an executive producer."
+             checked={!!selectedCompany.requireBoardApprovalForNewAgents}
+             onChange={(v) => settingsMutation.mutate(v)}
+           />
+@@ -386,7 +386,7 @@ export function CompanySettings() {
+         </div>
+         <div className="space-y-3 rounded-md border border-destructive/40 bg-destructive/5 px-4 py-4">
+           <p className="text-sm text-muted-foreground">
+-            Archive this company to hide it from the sidebar. This persists in
++            Archive this production to hide it from the sidebar. This persists in
+             the database.
+           </p>
+           <div className="flex items-center gap-2">
+@@ -400,7 +400,7 @@ export function CompanySettings() {
+               onClick={() => {
+                 if (!selectedCompanyId) return;
+                 const confirmed = window.confirm(
+-                  `Archive company "${selectedCompany.name}"? It will be hidden from the sidebar.`
++                  `Archive production "${selectedCompany.name}"? It will be hidden from the sidebar.`
+                 );
+                 if (!confirmed) return;
+                 const nextCompanyId =
+@@ -419,13 +419,13 @@ export function CompanySettings() {
+                 ? "Archiving..."
+                 : selectedCompany.status === "archived"
+                 ? "Already archived"
+-                : "Archive company"}
++                : "Archive production"}
+             </Button>
+             {archiveMutation.isError && (
+               <span className="text-xs text-destructive">
+                 {archiveMutation.error instanceof Error
+                   ? archiveMutation.error.message
+-                  : "Failed to archive company"}
++                  : "Failed to archive production"}
+               </span>
+             )}
+           </div>
+diff --git a/ui/src/pages/Costs.tsx b/ui/src/pages/Costs.tsx
+index 12207f0..ff2c004 100644
+--- a/ui/src/pages/Costs.tsx
++++ b/ui/src/pages/Costs.tsx
+@@ -60,7 +60,7 @@ export function Costs() {
+   const [customTo, setCustomTo] = useState("");
+ 
+   useEffect(() => {
+-    setBreadcrumbs([{ label: "Costs" }]);
++    setBreadcrumbs([{ label: "Budget" }]);
+   }, [setBreadcrumbs]);
+ 
+   const { from, to } = useMemo(() => {
+@@ -87,7 +87,7 @@ export function Costs() {
+   });
+ 
+   if (!selectedCompanyId) {
+-    return <EmptyState icon={DollarSign} message="Select a company to view costs." />;
++    return <EmptyState icon={DollarSign} message="Select a production to view budget." />;
+   }
+ 
+   if (isLoading) {
+@@ -173,7 +173,7 @@ export function Costs() {
+           <div className="grid md:grid-cols-2 gap-4">
+             <Card>
+               <CardContent className="p-4">
+-                <h3 className="text-sm font-semibold mb-3">By Agent</h3>
++                <h3 className="text-sm font-semibold mb-3">By Writer</h3>
+                 {data.byAgent.length === 0 ? (
+                   <p className="text-sm text-muted-foreground">No cost events yet.</p>
+                 ) : (
+@@ -216,9 +216,9 @@ export function Costs() {
+ 
+             <Card>
+               <CardContent className="p-4">
+-                <h3 className="text-sm font-semibold mb-3">By Project</h3>
++                <h3 className="text-sm font-semibold mb-3">By Episode</h3>
+                 {data.byProject.length === 0 ? (
+-                  <p className="text-sm text-muted-foreground">No project-attributed run costs yet.</p>
++                  <p className="text-sm text-muted-foreground">No episode-attributed run costs yet.</p>
+                 ) : (
+                   <div className="space-y-2">
+                     {data.byProject.map((row) => (
+diff --git a/ui/src/pages/Dashboard.tsx b/ui/src/pages/Dashboard.tsx
+index 823d57d..249ece3 100644
+--- a/ui/src/pages/Dashboard.tsx
++++ b/ui/src/pages/Dashboard.tsx
+@@ -167,14 +167,14 @@ export function Dashboard() {
+       return (
+         <EmptyState
+           icon={LayoutDashboard}
+-          message="Welcome to Paperclip. Set up your first company and agent to get started."
++          message="Welcome to the Writers Room. Set up your first production and writer to get started."
+           action="Get Started"
+           onAction={openOnboarding}
+         />
+       );
+     }
+     return (
+-      <EmptyState icon={LayoutDashboard} message="Create or select a company to view the dashboard." />
++      <EmptyState icon={LayoutDashboard} message="Create or select a production to view the dashboard." />
+     );
+   }
+ 
+@@ -193,7 +193,7 @@ export function Dashboard() {
+           <div className="flex items-center gap-2.5">
+             <Bot className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
+             <p className="text-sm text-amber-900 dark:text-amber-100">
+-              You have no agents.
++              You have no writers.
+             </p>
+           </div>
+           <button
+@@ -213,7 +213,7 @@ export function Dashboard() {
+             <MetricCard
+               icon={Bot}
+               value={data.agents.active + data.agents.running + data.agents.paused + data.agents.error}
+-              label="Agents Enabled"
++              label="Writers Active"
+               to="/agents"
+               description={
+                 <span>
+@@ -226,7 +226,7 @@ export function Dashboard() {
+             <MetricCard
+               icon={CircleDot}
+               value={data.tasks.inProgress}
+-              label="Tasks In Progress"
++              label="Assignments In Progress"
+               to="/issues"
+               description={
+                 <span>
+@@ -251,11 +251,11 @@ export function Dashboard() {
+             <MetricCard
+               icon={ShieldCheck}
+               value={data.pendingApprovals}
+-              label="Pending Approvals"
++              label="Pending Greenlights"
+               to="/approvals"
+               description={
+                 <span>
+-                  {data.staleTasks} stale tasks
++                  {data.staleTasks} stale assignments
+                 </span>
+               }
+             />
+@@ -265,10 +265,10 @@ export function Dashboard() {
+             <ChartCard title="Run Activity" subtitle="Last 14 days">
+               <RunActivityChart runs={runs ?? []} />
+             </ChartCard>
+-            <ChartCard title="Issues by Priority" subtitle="Last 14 days">
++            <ChartCard title="Assignments by Priority" subtitle="Last 14 days">
+               <PriorityChart issues={issues ?? []} />
+             </ChartCard>
+-            <ChartCard title="Issues by Status" subtitle="Last 14 days">
++            <ChartCard title="Assignments by Status" subtitle="Last 14 days">
+               <IssueStatusChart issues={issues ?? []} />
+             </ChartCard>
+             <ChartCard title="Success Rate" subtitle="Last 14 days">
+@@ -298,14 +298,14 @@ export function Dashboard() {
+               </div>
+             )}
+ 
+-            {/* Recent Tasks */}
++            {/* Recent Assignments */}
+             <div className="min-w-0">
+               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+-                Recent Tasks
++                Recent Assignments
+               </h3>
+               {recentIssues.length === 0 ? (
+                 <div className="border border-border p-4">
+-                  <p className="text-sm text-muted-foreground">No tasks yet.</p>
++                  <p className="text-sm text-muted-foreground">No assignments yet.</p>
+                 </div>
+               ) : (
+                 <div className="border border-border divide-y divide-border overflow-hidden">
+diff --git a/ui/src/pages/GoalDetail.tsx b/ui/src/pages/GoalDetail.tsx
+index 3eed0ba..9706799 100644
+--- a/ui/src/pages/GoalDetail.tsx
++++ b/ui/src/pages/GoalDetail.tsx
+@@ -93,8 +93,8 @@ export function GoalDetail() {
+ 
+   useEffect(() => {
+     setBreadcrumbs([
+-      { label: "Goals", href: "/goals" },
+-      { label: goal?.title ?? goalId ?? "Goal" }
++      { label: "Story Arcs", href: "/goals" },
++      { label: goal?.title ?? goalId ?? "Story Arc" }
+     ]);
+   }, [setBreadcrumbs, goal, goalId]);
+ 
+diff --git a/ui/src/pages/Goals.tsx b/ui/src/pages/Goals.tsx
+index 490bb04..46ce231 100644
+--- a/ui/src/pages/Goals.tsx
++++ b/ui/src/pages/Goals.tsx
+@@ -17,7 +17,7 @@ export function Goals() {
+   const { setBreadcrumbs } = useBreadcrumbs();
+ 
+   useEffect(() => {
+-    setBreadcrumbs([{ label: "Goals" }]);
++    setBreadcrumbs([{ label: "Story Arcs" }]);
+   }, [setBreadcrumbs]);
+ 
+   const { data: goals, isLoading, error } = useQuery({
+@@ -27,7 +27,7 @@ export function Goals() {
+   });
+ 
+   if (!selectedCompanyId) {
+-    return <EmptyState icon={Target} message="Select a company to view goals." />;
++    return <EmptyState icon={Target} message="Select a production to view story arcs." />;
+   }
+ 
+   if (isLoading) {
+@@ -41,8 +41,8 @@ export function Goals() {
+       {goals && goals.length === 0 && (
+         <EmptyState
+           icon={Target}
+-          message="No goals yet."
+-          action="Add Goal"
++          message="No story arcs yet."
++          action="Add Story Arc"
+           onAction={() => openNewGoal()}
+         />
+       )}
+@@ -52,7 +52,7 @@ export function Goals() {
+           <div className="flex items-center justify-start">
+             <Button size="sm" variant="outline" onClick={() => openNewGoal()}>
+               <Plus className="h-3.5 w-3.5 mr-1.5" />
+-              New Goal
++              New Story Arc
+             </Button>
+           </div>
+           <GoalTree goals={goals} goalLink={(goal) => `/goals/${goal.id}`} />
+diff --git a/ui/src/pages/Inbox.tsx b/ui/src/pages/Inbox.tsx
+index 25d1da0..20be0c2 100644
+--- a/ui/src/pages/Inbox.tsx
++++ b/ui/src/pages/Inbox.tsx
+@@ -524,7 +524,7 @@ export function Inbox() {
+   });
+ 
+   if (!selectedCompanyId) {
+-    return <EmptyState icon={InboxIcon} message="Select a company to view inbox." />;
++    return <EmptyState icon={InboxIcon} message="Select a production to view inbox." />;
+   }
+ 
+   const hasRunFailures = failedRuns.length > 0;
+@@ -622,10 +622,10 @@ export function Inbox() {
+               </SelectTrigger>
+               <SelectContent>
+                 <SelectItem value="everything">All categories</SelectItem>
+-                <SelectItem value="issues_i_touched">My recent issues</SelectItem>
++                <SelectItem value="issues_i_touched">My recent assignments</SelectItem>
+                 <SelectItem value="join_requests">Join requests</SelectItem>
+-                <SelectItem value="approvals">Approvals</SelectItem>
+-                <SelectItem value="failed_runs">Failed runs</SelectItem>
++                <SelectItem value="approvals">Greenlights</SelectItem>
++                <SelectItem value="failed_runs">Failed sessions</SelectItem>
+                 <SelectItem value="alerts">Alerts</SelectItem>
+                 <SelectItem value="stale_work">Stale work</SelectItem>
+               </SelectContent>
+@@ -637,7 +637,7 @@ export function Inbox() {
+                 onValueChange={(value) => setAllApprovalFilter(value as InboxApprovalFilter)}
+               >
+                 <SelectTrigger className="h-8 w-[170px] text-xs">
+-                  <SelectValue placeholder="Approval status" />
++                  <SelectValue placeholder="Greenlight status" />
+                 </SelectTrigger>
+                 <SelectContent>
+                   <SelectItem value="all">All approval statuses</SelectItem>
+@@ -673,7 +673,7 @@ export function Inbox() {
+           {showSeparatorBefore("approvals") && <Separator />}
+           <div>
+             <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+-              {tab === "new" ? "Approvals Needing Action" : "Approvals"}
++              {tab === "new" ? "Greenlights Needing Action" : "Greenlights"}
+             </h3>
+             <div className="grid gap-3">
+               {approvalsToRender.map((approval) => (
+@@ -755,7 +755,7 @@ export function Inbox() {
+           {showSeparatorBefore("failed_runs") && <Separator />}
+           <div>
+             <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+-              Failed Runs
++              Failed Sessions
+             </h3>
+             <div className="grid gap-3">
+               {failedRuns.map((run) => (
+diff --git a/ui/src/pages/IssueDetail.tsx b/ui/src/pages/IssueDetail.tsx
+index 90c9488..4f2eb78 100644
+--- a/ui/src/pages/IssueDetail.tsx
++++ b/ui/src/pages/IssueDetail.tsx
+@@ -465,9 +465,9 @@ export function IssueDetail() {
+   });
+ 
+   useEffect(() => {
+-    const titleLabel = issue?.title ?? issueId ?? "Issue";
++    const titleLabel = issue?.title ?? issueId ?? "Assignment";
+     setBreadcrumbs([
+-      { label: "Issues", href: "/issues" },
++      { label: "Assignments", href: "/issues" },
+       { label: hasLiveRuns ? `🔵 ${titleLabel}` : titleLabel },
+     ]);
+   }, [setBreadcrumbs, issue, issueId, hasLiveRuns]);
+diff --git a/ui/src/pages/Issues.tsx b/ui/src/pages/Issues.tsx
+index fce74c7..a4af8a4 100644
+--- a/ui/src/pages/Issues.tsx
++++ b/ui/src/pages/Issues.tsx
+@@ -64,7 +64,7 @@ export function Issues() {
+   }, [liveRuns]);
+ 
+   useEffect(() => {
+-    setBreadcrumbs([{ label: "Issues" }]);
++    setBreadcrumbs([{ label: "Assignments" }]);
+   }, [setBreadcrumbs]);
+ 
+   const { data: issues, isLoading, error } = useQuery({
+@@ -82,7 +82,7 @@ export function Issues() {
+   });
+ 
+   if (!selectedCompanyId) {
+-    return <EmptyState icon={CircleDot} message="Select a company to view issues." />;
++    return <EmptyState icon={CircleDot} message="Select a production to view assignments." />;
+   }
+ 
+   return (
+diff --git a/ui/src/pages/MyIssues.tsx b/ui/src/pages/MyIssues.tsx
+index ea717c6..f0b42de 100644
+--- a/ui/src/pages/MyIssues.tsx
++++ b/ui/src/pages/MyIssues.tsx
+@@ -17,7 +17,7 @@ export function MyIssues() {
+   const { setBreadcrumbs } = useBreadcrumbs();
+ 
+   useEffect(() => {
+-    setBreadcrumbs([{ label: "My Issues" }]);
++    setBreadcrumbs([{ label: "My Assignments" }]);
+   }, [setBreadcrumbs]);
+ 
+   const { data: issues, isLoading, error } = useQuery({
+@@ -27,7 +27,7 @@ export function MyIssues() {
+   });
+ 
+   if (!selectedCompanyId) {
+-    return <EmptyState icon={ListTodo} message="Select a company to view your issues." />;
++    return <EmptyState icon={ListTodo} message="Select a production to view your assignments." />;
+   }
+ 
+   if (isLoading) {
+@@ -44,7 +44,7 @@ export function MyIssues() {
+       {error && <p className="text-sm text-destructive">{error.message}</p>}
+ 
+       {myIssues.length === 0 && (
+-        <EmptyState icon={ListTodo} message="No issues assigned to you." />
++        <EmptyState icon={ListTodo} message="No assignments assigned to you." />
+       )}
+ 
+       {myIssues.length > 0 && (
+diff --git a/ui/src/pages/Org.tsx b/ui/src/pages/Org.tsx
+index 2cbc181..e4136d6 100644
+--- a/ui/src/pages/Org.tsx
++++ b/ui/src/pages/Org.tsx
+@@ -94,7 +94,7 @@ export function Org() {
+   const { setBreadcrumbs } = useBreadcrumbs();
+ 
+   useEffect(() => {
+-    setBreadcrumbs([{ label: "Org Chart" }]);
++    setBreadcrumbs([{ label: "Room Chart" }]);
+   }, [setBreadcrumbs]);
+ 
+   const { data, isLoading, error } = useQuery({
+@@ -104,7 +104,7 @@ export function Org() {
+   });
+ 
+   if (!selectedCompanyId) {
+-    return <EmptyState icon={GitBranch} message="Select a company to view org chart." />;
++    return <EmptyState icon={GitBranch} message="Select a production to view room chart." />;
+   }
+ 
+   if (isLoading) {
+@@ -118,7 +118,7 @@ export function Org() {
+       {data && data.length === 0 && (
+         <EmptyState
+           icon={GitBranch}
+-          message="No agents in the organization. Create agents to build your org chart."
++          message="No writers in the room. Bring in writers to build your room chart."
+         />
+       )}
+ 
+diff --git a/ui/src/pages/OrgChart.tsx b/ui/src/pages/OrgChart.tsx
+index 89b4d58..944e07c 100644
+--- a/ui/src/pages/OrgChart.tsx
++++ b/ui/src/pages/OrgChart.tsx
+@@ -161,7 +161,7 @@ export function OrgChart() {
+   }, [agents]);
+ 
+   useEffect(() => {
+-    setBreadcrumbs([{ label: "Org Chart" }]);
++    setBreadcrumbs([{ label: "Room Chart" }]);
+   }, [setBreadcrumbs]);
+ 
+   // Layout computation
+@@ -254,7 +254,7 @@ export function OrgChart() {
+   }, [zoom, pan]);
+ 
+   if (!selectedCompanyId) {
+-    return <EmptyState icon={Network} message="Select a company to view the org chart." />;
++    return <EmptyState icon={Network} message="Select a production to view the room chart." />;
+   }
+ 
+   if (isLoading) {
+@@ -262,7 +262,7 @@ export function OrgChart() {
+   }
+ 
+   if (orgTree && orgTree.length === 0) {
+-    return <EmptyState icon={Network} message="No organizational hierarchy defined." />;
++    return <EmptyState icon={Network} message="No room hierarchy defined." />;
+   }
+ 
+   return (
+diff --git a/ui/src/pages/ProjectDetail.tsx b/ui/src/pages/ProjectDetail.tsx
+index 2a56844..6a0b2f4 100644
+--- a/ui/src/pages/ProjectDetail.tsx
++++ b/ui/src/pages/ProjectDetail.tsx
+@@ -252,8 +252,8 @@ export function ProjectDetail() {
+ 
+   useEffect(() => {
+     setBreadcrumbs([
+-      { label: "Projects", href: "/projects" },
+-      { label: project?.name ?? routeProjectRef ?? "Project" },
++      { label: "Episodes", href: "/projects" },
++      { label: project?.name ?? routeProjectRef ?? "Episode" },
+     ]);
+   }, [setBreadcrumbs, project, routeProjectRef]);
+ 
+diff --git a/ui/src/pages/Projects.tsx b/ui/src/pages/Projects.tsx
+index 6fe80ad..b1430a3 100644
+--- a/ui/src/pages/Projects.tsx
++++ b/ui/src/pages/Projects.tsx
+@@ -19,7 +19,7 @@ export function Projects() {
+   const { setBreadcrumbs } = useBreadcrumbs();
+ 
+   useEffect(() => {
+-    setBreadcrumbs([{ label: "Projects" }]);
++    setBreadcrumbs([{ label: "Episodes" }]);
+   }, [setBreadcrumbs]);
+ 
+   const { data: projects, isLoading, error } = useQuery({
+@@ -29,7 +29,7 @@ export function Projects() {
+   });
+ 
+   if (!selectedCompanyId) {
+-    return <EmptyState icon={Hexagon} message="Select a company to view projects." />;
++    return <EmptyState icon={Hexagon} message="Select a production to view episodes." />;
+   }
+ 
+   if (isLoading) {
+@@ -41,7 +41,7 @@ export function Projects() {
+       <div className="flex items-center justify-end">
+         <Button size="sm" variant="outline" onClick={openNewProject}>
+           <Plus className="h-4 w-4 mr-1" />
+-          Add Project
++          Add Episode
+         </Button>
+       </div>
+ 
+@@ -50,8 +50,8 @@ export function Projects() {
+       {projects && projects.length === 0 && (
+         <EmptyState
+           icon={Hexagon}
+-          message="No projects yet."
+-          action="Add Project"
++          message="No episodes yet."
++          action="Add Episode"
+           onAction={openNewProject}
+         />
+       )}
